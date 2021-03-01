@@ -1,1 +1,7 @@
-# OtusSpringFramework
+#Курс:         Разработчик на Spring Framework
+#Курсант:      Иванников Евгений Михайлович
+#Группа:       spring-2021-02
+
+#Описание домашних работ:
+
+##Введение в Spring Framework

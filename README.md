@@ -8,4 +8,4 @@
 
 | № | Тема | Каталог |
 | ------ | ------ | ------ | 
-| 1 | Введение в Spring Framework | housework_1 |
+| 1 | Введение в Spring Framework | homework_1 |

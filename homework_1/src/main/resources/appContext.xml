@@ -7,12 +7,10 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <context:property-placeholder location="classpath:application.properties"  />
+
     <!-- Извлекает csv данные в Form -->
-    <bean id="csvToFormBean" class="spring.housework.models.CsvToFormBean">
-        <constructor-arg value="data.csv" />
-    </bean>
-    <!-- Отображение Form -->
-    <bean id="formBean" class="spring.housework.models.FormBean">
-        <constructor-arg ref="csvToFormBean" />
+    <bean id="serviceForm" class="spring.homework.services.ServiceForm">
+        <constructor-arg value="${csvFile}" />
     </bean>
 </beans>

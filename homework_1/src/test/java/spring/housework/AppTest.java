@@ -4,6 +4,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import spring.homework.services.ServiceForm;
+
+import java.io.IOException;
 
 /**
  * Unit test for simple App.
@@ -14,17 +17,17 @@ public class AppTest
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        try {
-            ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-                    "appContext.xml"
-            );
-            context.close();
-            assertTrue( true );
-        } catch (Exception e) {
-            assertTrue( false );
-        }
+    public void shouldAnswerWithTrue() throws Exception {
+        ClassPathXmlApplicationContext context=new ClassPathXmlApplicationContext(
+                "appContext.xml"
+        );
+
+        ServiceForm sf=context.getBean("serviceForm",ServiceForm.class);
+        sf.show();
+
+        context.close();
+
+        assertTrue( true );
 
     }
 }

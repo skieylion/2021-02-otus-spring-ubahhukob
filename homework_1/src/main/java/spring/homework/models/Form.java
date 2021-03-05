@@ -1,4 +1,4 @@
-package spring.housework.models;
+package spring.homework.models;
 
 import com.opencsv.bean.CsvBindAndSplitByPosition;
 import com.opencsv.bean.CsvBindByName;
@@ -32,11 +32,6 @@ public class Form {
 
     public List<String> getVariants() {
         return variants;
-    }
-    public void showVariants() {
-        for (int i=0;i<variants.size();i++) {
-            System.out.println("* "+variants.get(i));
-        }
     }
 
     public void setVariants(List<String> variants) {

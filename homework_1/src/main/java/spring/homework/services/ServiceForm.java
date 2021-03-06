@@ -21,7 +21,7 @@ public class ServiceForm {
     private void showVariants(Form f) {
         List<String> variants=f.getVariants();
         for (int i=0;i<variants.size();i++) {
-            System.out.println("* "+variants.get(i));
+            serviceIO.output("* "+variants.get(i));
         }
     }
 
@@ -30,10 +30,10 @@ public class ServiceForm {
         for (Form form:forms) {
             form.getVariants().add(form.getAnswer());
             Collections.shuffle(form.getVariants());
-            System.out.println("Question: "+form.getQuestion());
-            System.out.println("Answers: ");
+            serviceIO.output("Question: "+form.getQuestion());
+            serviceIO.output("Answers: ");
             showVariants(form);
-            System.out.println("------------------------------------------------");
+            serviceIO.output("------------------------------------------------");
         }
     }
 

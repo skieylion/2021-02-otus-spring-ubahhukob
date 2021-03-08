@@ -37,7 +37,7 @@ public class AppTest
 
     @Test
     public void shouldAnswerWithTrue() throws Exception {
-
+ 
         TestData td=new TestDataImpl();
         td.pushData();
 

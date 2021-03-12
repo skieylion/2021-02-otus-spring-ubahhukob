@@ -1,18 +1,20 @@
 package spring.homework.services;
 
 import org.springframework.stereotype.Service;
+import spring.homework.exceptions.ServiceIOException;
 
+import javax.annotation.PreDestroy;
 import java.io.*;
 
-
-public class ServiceConsole implements ServiceIO<String,String> {
-    private PrintStream out;
-    private InputStreamReader is;
-    private BufferedReader br;
+public class ServiceConsole implements ServiceIO {
+    private final PrintStream out;
+    private final InputStreamReader is;
+    private final BufferedReader br;
 
 
     public ServiceConsole(InputStream in, PrintStream out){
         this.out=out;
+
         is=new InputStreamReader(in);
         br = new BufferedReader(is);
     }
@@ -20,14 +22,25 @@ public class ServiceConsole implements ServiceIO<String,String> {
     public void output(String out){
         this.out.println(out);
     }
-    public String input() throws IOException {
-        return br.readLine();
+    public String input() throws ServiceIOException {
+        try{
+            return br.readLine();
+        }
+        catch (Exception e){
+            throw new ServiceIOException(e.getMessage());
+        }
     }
 
-    @Override
-    public void close() throws IOException {
-        is.close();
-        br.close();
+    @PreDestroy
+    public void close() throws ServiceIOException {
+        try{
+            is.close();
+            br.close();
+        }
+        catch (Exception e){
+            throw new ServiceIOException(e.getMessage());
+        }
+
     }
 
 

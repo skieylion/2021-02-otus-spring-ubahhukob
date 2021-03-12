@@ -1,9 +1,10 @@
 package spring.homework.services;
 
+import spring.homework.exceptions.ServiceIOException;
+
 import java.io.IOException;
 
-public interface ServiceIO<IN,OUT> {
-    public void output(OUT out);
-    public IN input() throws IOException;
-    public void close() throws IOException;
+public interface ServiceIO {
+    void output(String out);
+    String input() throws ServiceIOException;
 }

@@ -5,7 +5,7 @@ import com.opencsv.bean.CsvBindByPosition;
 
 import java.util.List;
 
-public class Form {
+public class Survey {
     @CsvBindByPosition(position = 0)
     private String question;
     @CsvBindByPosition(position = 1)

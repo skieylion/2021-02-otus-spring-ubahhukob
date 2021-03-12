@@ -1,56 +1,73 @@
 package spring.homework;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.*;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import spring.homework.config.ServicesConfig;
-import spring.homework.dao.TestCsvDAO;
-import spring.homework.domain.UserInput;
-import spring.homework.services.ServiceFormImpl;
-import spring.homework.services.TestData;
-import spring.homework.services.TestDataImpl;
+import spring.homework.dao.CsvDAO;
+import spring.homework.dao.SurveyDAO;
+import spring.homework.domain.Survey;
+import spring.homework.services.*;
+import spring.homework.services.ServiceSurveyImpl;
 
 
 import java.io.*;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Unit test for simple App.
- */
 @Configuration
-@Import(ServicesConfig.class)
 @ComponentScan
 @TestPropertySource("classpath:test.properties")
 @ContextConfiguration
 public class AppTest 
 {
-    /**
-     * Rigorous Test :-)
-     */
 
+    /*
+        TestData td=new TestDataImpl();
+        td.pushData();
+        AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(AppTest.class);
+        ServiceSurveyImpl sf=context.getBean("serviceSurveyImpl", ServiceSurveyImpl.class);
+        sf.input();
+        sf.test();
+        assertTrue(sf.getResult().equals(sf.getResultMax()-td.getUserInput().getCountWrong()));
+    */
 
     @Test
     public void shouldAnswerWithTrue() throws Exception {
 
-        TestData td=new TestDataImpl();
-        td.pushData();
+        String data =   "Ivan" + '\n' +
+                        "Ivanov" + '\n' +
+                        "I nothing do" + '\n';
+        InputStream is = new ByteArrayInputStream(data.getBytes());
+        System.setIn(is);
 
-        AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(AppTest.class);
+        SurveyDAO surveyDAOSpy = new CsvDAO("");
+        surveyDAOSpy = Mockito.spy(surveyDAOSpy);
 
-        ServiceFormImpl sf=context.getBean("serviceForm", ServiceFormImpl.class);
+        Survey survey=new Survey();
+        survey = Mockito.spy(survey);
+        Mockito.when(survey.getAnswer()).thenReturn("I nothing do");
+        Mockito.when(survey.getQuestion()).thenReturn("What do you do ?");
+        List<String> v=new ArrayList<>();
+        v.add("I work for Limited Company");
+        v.add("I am a programmer");
+        v.add("I don't know");
+        Mockito.when(survey.getVariants()).thenReturn(v);
 
-        sf.input();
+        List<Survey> listSurvey=new ArrayList<>();
+        listSurvey.add(survey);
 
-        sf.test();
-        sf.end();
+        Mockito.when(surveyDAOSpy.findAll()).thenReturn(listSurvey);
 
-        assertTrue(sf.getResult().equals(sf.getResultMax()-td.getUserInput().getCountWrong()));
+        ServiceIO serviceIO=new ServiceConsole(System.in,System.out);
 
+        ServiceSurveyImpl serviceSurveyImpl = new ServiceSurveyImpl(surveyDAOSpy,serviceIO);
+        serviceSurveyImpl.test();
+
+        assertSame(serviceSurveyImpl.getResult(),serviceSurveyImpl.getResultMax());
     }
 }
+

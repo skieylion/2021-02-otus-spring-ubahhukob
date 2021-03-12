@@ -4,17 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import spring.homework.dao.CsvDAO;
-import spring.homework.dao.DAO;
+import spring.homework.dao.SurveyDAO;
 import spring.homework.domain.*;
+import spring.homework.exceptions.ServiceIOException;
+import spring.homework.exceptions.SurveyException;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-@Service("serviceForm")
-public class ServiceFormImpl implements ServiceForm {
-    private ServiceIO<String,String> serviceIO;
-    private DAO source;
+@Service("serviceSurveyImpl")
+public class ServiceSurveyImpl implements ServiceSurvey {
+    private final ServiceIO serviceIO;
+    private final SurveyDAO source;
+
     private String firstName;
     private String secondName;
 
@@ -24,21 +28,19 @@ public class ServiceFormImpl implements ServiceForm {
 
     private int counter;
 
-
-    public ServiceFormImpl(@Autowired DAO source, @Autowired ServiceIO<String,String> serviceIO){
+    public ServiceSurveyImpl(SurveyDAO source, ServiceIO serviceIO){
         this.serviceIO=serviceIO;
         this.source=source;
         counter=0;
     }
 
     @Override
-    public List<Form> getListForm() throws IOException {
+    public List<Survey> getListForm() throws SurveyException {
         return source.findAll();
     }
 
 
-
-    private void showVariants(Form f) {
+    private void showVariants(Survey f) {
         List<String> variants=f.getVariants();
         for (int i=0;i<variants.size();i++) {
             serviceIO.output("* "+variants.get(i));
@@ -47,10 +49,12 @@ public class ServiceFormImpl implements ServiceForm {
 
 
     @Override
-    public void test() throws IOException {
+    public void test() throws SurveyException, ServiceIOException {
+        input();
+
         counter=0;
-        List<Form> forms=getListForm();
-        for (Form form:forms) {
+        List<Survey> forms=getListForm();
+        for (Survey form:forms) {
             serviceIO.output(form.getQuestion());
             form.getVariants().add(form.getAnswer());
             Collections.shuffle(form.getVariants());
@@ -64,8 +68,7 @@ public class ServiceFormImpl implements ServiceForm {
         serviceIO.output("your result is "+String.valueOf(counter)+" of the "+getResultMax()+" points");
     }
 
-    @Override
-    public void input() throws IOException {
+    void input() throws ServiceIOException {
         serviceIO.output("Hello. Nice to see you!");
         serviceIO.output("What is your first name ?");
         firstName=serviceIO.input();
@@ -74,25 +77,18 @@ public class ServiceFormImpl implements ServiceForm {
         serviceIO.output("Let's test your english ...");
     }
 
-    @Override
     public Integer getResult() {
         return getCounter();
     }
 
-    @Override
-    public Integer getResultMax() throws IOException {
+    public Integer getResultMax() throws SurveyException {
         return getListForm().size();
     }
 
-    @Override
-    public void end() throws IOException {
-        serviceIO.close();
-    }
 
-
-    public void show() throws IOException {
-        List<Form> forms=getListForm();
-        for (Form form:forms) {
+    public void show() throws SurveyException {
+        List<Survey> forms=getListForm();
+        for (Survey form:forms) {
             form.getVariants().add(form.getAnswer());
             Collections.shuffle(form.getVariants());
             serviceIO.output("Question: "+form.getQuestion());

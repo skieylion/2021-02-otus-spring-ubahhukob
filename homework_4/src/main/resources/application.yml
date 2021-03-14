@@ -1,0 +1,5 @@
+csvFile: i18n/data/data_en_US.csv
+languageTag: en_US
+spring:
+  messages:
+    basename: i18n/messages

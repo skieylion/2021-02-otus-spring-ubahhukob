@@ -27,7 +27,7 @@ public class ServiceConsole implements ServiceIO {
             return br.readLine();
         }
         catch (Exception e){
-            throw new ServiceIOException(e.getMessage());
+            throw new ServiceIOException(e.getCause());
         }
     }
 
@@ -38,7 +38,7 @@ public class ServiceConsole implements ServiceIO {
             br.close();
         }
         catch (Exception e){
-            throw new ServiceIOException(e.getMessage());
+            throw new ServiceIOException(e.getCause());
         }
 
     }

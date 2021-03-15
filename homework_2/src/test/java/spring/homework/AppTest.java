@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import spring.homework.dao.CsvDAO;
+import spring.homework.dao.CsvSurvayDAO;
 import spring.homework.dao.SurveyDAO;
 import spring.homework.domain.Survey;
 import spring.homework.services.*;
@@ -44,7 +44,7 @@ public class AppTest
         InputStream is = new ByteArrayInputStream(data.getBytes());
         System.setIn(is);
 
-        SurveyDAO surveyDAOSpy = new CsvDAO("");
+        SurveyDAO surveyDAOSpy = new CsvSurvayDAO("");
         surveyDAOSpy = Mockito.spy(surveyDAOSpy);
 
         Survey survey=new Survey();
@@ -64,10 +64,11 @@ public class AppTest
 
         ServiceIO serviceIO=new ServiceConsole(System.in,System.out);
 
-        ServiceSurveyImpl serviceSurveyImpl = new ServiceSurveyImpl(surveyDAOSpy,serviceIO);
+        ServiceUser serviceUser=new ServiceUser();
+        ServiceSurvey serviceSurveyImpl = new ServiceSurveyImpl(surveyDAOSpy,serviceIO,serviceUser);
         serviceSurveyImpl.test();
 
-        assertSame(serviceSurveyImpl.getResult(),serviceSurveyImpl.getResultMax());
+        assertSame(serviceSurveyImpl.getCurrentResultTest(),serviceSurveyImpl.getMaxResultTest());
     }
 }
 

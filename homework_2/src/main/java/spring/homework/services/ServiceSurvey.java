@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ServiceSurvey {
-    List<Survey> getListForm() throws SurveyException;
     void test() throws SurveyException, ServiceIOException;
+    Integer getCurrentResultTest();
+    Integer getMaxResultTest() throws SurveyException;
 }

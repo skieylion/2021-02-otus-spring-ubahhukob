@@ -36,26 +36,21 @@ public class ServiceSurveyImpl implements ServiceSurvey {
 
     @Override
     public void test() throws SurveyException {
-
-        try {
-            counterTestResult = 0;
-            List<Survey> surveys = source.findAll();
-            for (Survey survey : surveys) {
-                serviceIO.output(survey.getQuestion());
-                survey.getVariants().add(survey.getAnswer());
-                Collections.shuffle(survey.getVariants());
-                showVariants(survey);
-                serviceIO.output("your answer:");
-                String answer = serviceIO.input();
-                if (survey.getAnswer().equals(answer)) {
-                    counterTestResult++;
-                }
+        counterTestResult = 0;
+        List<Survey> surveys = source.findAll();
+        for (Survey survey : surveys) {
+            serviceIO.output(survey.getQuestion());
+            survey.getVariants().add(survey.getAnswer());
+            Collections.shuffle(survey.getVariants());
+            showVariants(survey);
+            serviceIO.output("your answer:");
+            String answer = serviceIO.input();
+            if (survey.getAnswer().equals(answer)) {
+                counterTestResult++;
             }
-            serviceIO.output("your result is " + String.valueOf(counterTestResult) + " of the " + surveys.size() + " points");
         }
-        catch (Exception e){
-            throw new SurveyException(e);
-        }
+        serviceIO.output("your result is " + String.valueOf(counterTestResult) + " of the " + surveys.size() + " points");
+
     }
 
 }

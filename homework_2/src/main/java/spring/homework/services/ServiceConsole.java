@@ -28,18 +28,18 @@ public class ServiceConsole implements ServiceIO {
             return br.readLine();
         }
         catch (Exception e){
-            throw new SurveyException(e.getCause());
+            throw new SurveyException(e);
         }
     }
 
     @PreDestroy
-    public void close() throws ServiceIOException {
+    public void close() throws SurveyException {
         try{
             is.close();
             br.close();
         }
         catch (Exception e){
-            throw new ServiceIOException(e.getCause());
+            throw new SurveyException(e);
         }
 
     }

@@ -4,24 +4,15 @@ import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import spring.homework.dao.CsvDAO;
+import spring.homework.dao.CsvSurveyDAO;
 import spring.homework.dao.SurveyDAO;
 import spring.homework.domain.Survey;
 import spring.homework.exceptions.ServiceIOException;
 import spring.homework.exceptions.SurveyException;
-import spring.homework.services.ServiceConsole;
-import spring.homework.services.ServiceIO;
-import spring.homework.services.ServiceSurveyImpl;
+import spring.homework.services.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -40,7 +31,7 @@ public class AppTests {
 		InputStream is = new ByteArrayInputStream(data.getBytes());
 		System.setIn(is);
 
-		SurveyDAO surveyDAOSpy = new CsvDAO("");
+		SurveyDAO surveyDAOSpy = new CsvSurveyDAO("");
 		surveyDAOSpy = Mockito.spy(surveyDAOSpy);
 
 		Survey survey=new Survey();
@@ -74,11 +65,11 @@ public class AppTests {
 		Mockito.when(ms.getMessage("yourAnswerMessage",null, loc)).thenReturn("your answer:");
 		Mockito.when(ms.getMessage("resultMessage",null, loc)).thenReturn("your result is %d of the %d points");
 
-
-		ServiceSurveyImpl serviceSurveyImpl = new ServiceSurveyImpl(surveyDAOSpy,serviceIO,ms,"en_US");
+		ServiceUser serviceUser=new ServiceUser();
+		ServiceSurvey serviceSurveyImpl = new ServiceSurveyImpl(surveyDAOSpy,serviceIO,ms,"en_US",serviceUser);
 		serviceSurveyImpl.test();
 
-		assertSame(serviceSurveyImpl.getResult(),serviceSurveyImpl.getResultMax());
+		assertSame(serviceSurveyImpl.getCurrentResultTest(),serviceSurveyImpl.getMaxResultTest());
 	}
 
 }

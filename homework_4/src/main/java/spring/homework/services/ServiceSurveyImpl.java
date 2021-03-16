@@ -20,21 +20,19 @@ public class ServiceSurveyImpl implements ServiceSurvey {
     private final MessageSource ms;
     private final String languageTag;
 
-    private String firstName;
-    private String secondName;
+    @Autowired
+    private final ServiceUser user;
 
-    private int getCounter() {
-        return counter;
-    }
 
-    private int counter;
+    private int counterTestResult;
 
-    public ServiceSurveyImpl(SurveyDAO source, ServiceIO serviceIO,MessageSource ms,@Value("${languageTag}") String languageTag){
+    public ServiceSurveyImpl(SurveyDAO source, ServiceIO serviceIO,MessageSource ms,@Value("${languageTag}") String languageTag,ServiceUser user){
         this.serviceIO=serviceIO;
         this.source=source;
         this.ms=ms;
         this.languageTag=languageTag;
-        counter=0;
+        this.user=user;
+        counterTestResult=0;
     }
 
     private String getValue(String name){
@@ -42,10 +40,6 @@ public class ServiceSurveyImpl implements ServiceSurvey {
         return value;
     }
 
-    @Override
-    public List<Survey> getListForm() throws SurveyException {
-        return source.findAll();
-    }
 
 
     private void showVariants(Survey f) {
@@ -58,10 +52,15 @@ public class ServiceSurveyImpl implements ServiceSurvey {
 
     @Override
     public void test() throws SurveyException, ServiceIOException {
-        input();
+        serviceIO.output(getValue("hello"));
+        serviceIO.output(getValue("yourFirstName"));
+        user.setFirstName(serviceIO.input());
+        serviceIO.output(getValue("yourSecondName"));
+        user.setSecondName(serviceIO.input());
+        serviceIO.output(getValue("startMessage"));
 
-        counter=0;
-        List<Survey> forms=getListForm();
+        counterTestResult=0;
+        List<Survey> forms=source.findAll();
         for (Survey form:forms) {
             serviceIO.output(form.getQuestion());
             form.getVariants().add(form.getAnswer());
@@ -70,41 +69,19 @@ public class ServiceSurveyImpl implements ServiceSurvey {
             serviceIO.output(getValue("yourAnswerMessage"));
             String answer=serviceIO.input();
             if(form.getAnswer().equals(answer)==true){
-                counter++;
+                counterTestResult++;
             }
         }
-        String str = String.format(getValue("resultMessage"), counter, getResultMax());
+        String str = String.format(getValue("resultMessage"), counterTestResult, getMaxResultTest());
         serviceIO.output(str);
     }
 
-    void input() throws ServiceIOException {
-        serviceIO.output(getValue("hello"));
-        serviceIO.output(getValue("yourFirstName"));
-        firstName=serviceIO.input();
-        serviceIO.output(getValue("yourSecondName"));
-        secondName=serviceIO.input();
-        serviceIO.output(getValue("startMessage"));
+    public Integer getCurrentResultTest() {
+        return counterTestResult;
     }
 
-    public Integer getResult() {
-        return getCounter();
-    }
-
-    public Integer getResultMax() throws SurveyException {
-        return getListForm().size();
-    }
-
-
-    public void show() throws SurveyException {
-        List<Survey> forms=getListForm();
-        for (Survey form:forms) {
-            form.getVariants().add(form.getAnswer());
-            Collections.shuffle(form.getVariants());
-            serviceIO.output("Question: "+form.getQuestion());
-            serviceIO.output("Answers: ");
-            showVariants(form);
-            serviceIO.output("------------------------------------------------");
-        }
+    public Integer getMaxResultTest() throws SurveyException {
+        return source.findAll().size();
     }
 
 }

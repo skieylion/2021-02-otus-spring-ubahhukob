@@ -10,6 +10,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import spring.homework.services.ServiceSurvey;
 import spring.homework.services.ServiceSurveyImpl;
 
 @SpringBootApplication
@@ -21,7 +22,7 @@ public class App
     public static void main( String[] args ) throws Exception {
         ApplicationContext context=SpringApplication.run(App.class, args);
 
-        ServiceSurveyImpl sf=context.getBean("serviceSurveyImpl", ServiceSurveyImpl.class);
+        ServiceSurvey sf=context.getBean("serviceSurveyImpl", ServiceSurvey.class);
         sf.test();
     }
 

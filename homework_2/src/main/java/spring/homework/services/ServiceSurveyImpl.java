@@ -19,13 +19,9 @@ public class ServiceSurveyImpl implements ServiceSurvey {
     private final ServiceIO serviceIO;
     private final SurveyDAO source;
 
-    @Autowired
-    private final ServiceUser user;
-
     private int counterTestResult;
 
-    public ServiceSurveyImpl(SurveyDAO source, ServiceIO serviceIO,ServiceUser user){
-        this.user=user;
+    public ServiceSurveyImpl(SurveyDAO source, ServiceIO serviceIO){
         this.serviceIO=serviceIO;
         this.source=source;
         counterTestResult=0;
@@ -39,38 +35,27 @@ public class ServiceSurveyImpl implements ServiceSurvey {
     }
 
     @Override
-    public void test() throws SurveyException, ServiceIOException {
-        serviceIO.output("Hello. Nice to see you!");
-        serviceIO.output("What is your first name ?");
-        String fName=serviceIO.input();
-        user.setFirstName(fName);
-        serviceIO.output("What is your second name ?");
-        String sName=serviceIO.input();
-        user.setSecondName(sName);
-        serviceIO.output("Let's test your english ...");
+    public void test() throws SurveyException {
 
-        counterTestResult=0;
-        List<Survey> forms=source.findAll();
-        for (Survey form:forms) {
-            serviceIO.output(form.getQuestion());
-            form.getVariants().add(form.getAnswer());
-            Collections.shuffle(form.getVariants());
-            showVariants(form);
-            serviceIO.output("your answer:");
-            String answer=serviceIO.input();
-            if(form.getAnswer().equals(answer)==true){
-                counterTestResult++;
+        try {
+            counterTestResult = 0;
+            List<Survey> surveys = source.findAll();
+            for (Survey survey : surveys) {
+                serviceIO.output(survey.getQuestion());
+                survey.getVariants().add(survey.getAnswer());
+                Collections.shuffle(survey.getVariants());
+                showVariants(survey);
+                serviceIO.output("your answer:");
+                String answer = serviceIO.input();
+                if (survey.getAnswer().equals(answer)) {
+                    counterTestResult++;
+                }
             }
+            serviceIO.output("your result is " + String.valueOf(counterTestResult) + " of the " + surveys.size() + " points");
         }
-        serviceIO.output("your result is "+String.valueOf(counterTestResult)+" of the "+getMaxResultTest()+" points");
-    }
-
-    public Integer getCurrentResultTest() {
-        return counterTestResult;
-    }
-
-    public Integer getMaxResultTest() throws SurveyException {
-        return source.findAll().size();
+        catch (Exception e){
+            throw new SurveyException(e);
+        }
     }
 
 }

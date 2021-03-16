@@ -1,32 +1,11 @@
 package spring.homework.services;
 
 import org.springframework.stereotype.Service;
+import spring.homework.domain.User;
+import spring.homework.exceptions.ServiceIOException;
+import spring.homework.exceptions.SurveyException;
 
-@Service
-public class ServiceUser {
-    private  String firstName;
-    private  String secondName;
-
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getSecondName() {
-        return secondName;
-    }
-
-
-
-
-
-
+public interface ServiceUser {
+    void inputUserData() throws ServiceIOException, SurveyException;
+    User getUserData();
 }

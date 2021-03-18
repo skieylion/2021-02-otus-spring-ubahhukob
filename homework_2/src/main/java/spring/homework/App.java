@@ -17,9 +17,6 @@ public class App
     public static void main( String[] args ) throws Exception {
         AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(App.class);
 
-        ServiceUser serviceUser=context.getBean("serviceUserImpl", ServiceUser.class);
-        serviceUser.inputUserData();
-
         ServiceSurvey serviceSurvey=context.getBean("serviceSurveyImpl", ServiceSurvey.class);
         serviceSurvey.test();
 

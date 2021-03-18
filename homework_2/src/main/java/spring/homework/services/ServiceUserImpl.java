@@ -1,6 +1,7 @@
 package spring.homework.services;
 
 import org.springframework.stereotype.Service;
+import spring.homework.domain.Survey;
 import spring.homework.domain.User;
 import spring.homework.exceptions.ServiceIOException;
 import spring.homework.exceptions.SurveyException;
@@ -9,15 +10,15 @@ import spring.homework.exceptions.SurveyException;
 public class ServiceUserImpl implements ServiceUser {
 
     private final ServiceIO serviceIO;
-    private User user;
+
 
     public ServiceUserImpl(ServiceIO serviceIO) {
         this.serviceIO = serviceIO;
-        this.user=new User();
     }
 
     @Override
-    public void inputUserData() throws SurveyException {
+    public User setUserData() throws SurveyException {
+        User user=new User();
         serviceIO.output("Hello. Nice to see you!");
         serviceIO.output("What is your first name ?");
         String fName=serviceIO.input();
@@ -26,11 +27,13 @@ public class ServiceUserImpl implements ServiceUser {
         String sName=serviceIO.input();
         user.setSecondName(sName);
         serviceIO.output("Let's test your english ...");
+        return user;
     }
 
     @Override
-    public User getUserData() {
-        return user;
+    public String askUserAnswer() throws SurveyException {
+        serviceIO.output("your answer:");
+        return serviceIO.input();
     }
 
 

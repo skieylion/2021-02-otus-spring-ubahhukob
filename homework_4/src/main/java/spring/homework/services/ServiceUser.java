@@ -1,26 +1,8 @@
 package spring.homework.services;
 
-import org.springframework.stereotype.Service;
+import spring.homework.domain.User;
+import spring.homework.exceptions.TestException;
 
-@Service
-public class ServiceUser {
-    private  String firstName;
-    private  String secondName;
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getSecondName() {
-        return secondName;
-    }
-
+public interface ServiceUser {
+    User inputUserData() throws TestException;
 }

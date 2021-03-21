@@ -1,49 +1,30 @@
 package spring.homework.services;
 
-import spring.homework.exceptions.ServiceIOException;
+import spring.homework.exceptions.TestException;
 
-import javax.annotation.PreDestroy;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 
 public class ServiceConsole implements ServiceIO {
     private final PrintStream out;
     private final InputStreamReader is;
     private final BufferedReader br;
 
-
     public ServiceConsole(InputStream in, PrintStream out){
         this.out=out;
-
         is=new InputStreamReader(in);
         br = new BufferedReader(is);
     }
 
-    public void output(String out){
+    public void output(String out,Object ...args) {
         this.out.println(out);
     }
-    public String input() throws ServiceIOException {
+    public String input() throws TestException {
         try{
             return br.readLine();
         }
         catch (Exception e){
-            throw new ServiceIOException(e.getCause());
+            throw new TestException(e);
         }
     }
-
-    @PreDestroy
-    public void close() throws ServiceIOException {
-        try{
-            is.close();
-            br.close();
-        }
-        catch (Exception e){
-            throw new ServiceIOException(e.getCause());
-        }
-
-    }
-
 
 }

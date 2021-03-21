@@ -1,5 +1,5 @@
-csvFile: i18n/data/data_en_US.csv
-languageTag: en_US
+csvData: i18n/data/data_ru_RU.csv
+languageTag: ru-RU
 spring:
   messages:
-    basename: i18n/messages
+    basename: i18n/messages/messages

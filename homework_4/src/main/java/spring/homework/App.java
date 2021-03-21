@@ -12,7 +12,6 @@ import spring.homework.services.TestRunner;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@Configuration
 @ComponentScan
 public class App 
 {

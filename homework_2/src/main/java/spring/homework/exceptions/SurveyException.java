@@ -1,7 +1,8 @@
 package spring.homework.exceptions;
 
 public class SurveyException extends Exception {
-    public SurveyException(String message){
-        super(message);
+    public SurveyException(Throwable cause){
+        super(cause);
     }
+
 }

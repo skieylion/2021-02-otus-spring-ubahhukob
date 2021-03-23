@@ -1,21 +1,28 @@
 package spring.homework;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.context.annotation.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import spring.homework.dao.CsvDAO;
+import spring.homework.dao.CsvSurveyDAO;
 import spring.homework.dao.SurveyDAO;
+import spring.homework.domain.ResultSurvey;
 import spring.homework.domain.Survey;
+import spring.homework.domain.User;
+import spring.homework.exceptions.SurveyException;
 import spring.homework.services.*;
 import spring.homework.services.ServiceSurveyImpl;
 
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -35,39 +42,45 @@ public class AppTest
         assertTrue(sf.getResult().equals(sf.getResultMax()-td.getUserInput().getCountWrong()));
     */
 
+
     @Test
-    public void shouldAnswerWithTrue() throws Exception {
+    public void shouldAnswerWithTrue2() throws SurveyException {
+        SurveyDAO surveyDAO = Mockito.mock(SurveyDAO.class);
 
-        String data =   "Ivan" + '\n' +
-                        "Ivanov" + '\n' +
-                        "I nothing do" + '\n';
-        InputStream is = new ByteArrayInputStream(data.getBytes());
-        System.setIn(is);
+        String rightAnswer = "I nothing do";
 
-        SurveyDAO surveyDAOSpy = new CsvDAO("");
-        surveyDAOSpy = Mockito.spy(surveyDAOSpy);
+        Survey survey = new Survey();
+        survey.setAnswer(rightAnswer);
+        survey.setQuestion("What do you do ?");
 
-        Survey survey=new Survey();
-        survey = Mockito.spy(survey);
-        Mockito.when(survey.getAnswer()).thenReturn("I nothing do");
-        Mockito.when(survey.getQuestion()).thenReturn("What do you do ?");
-        List<String> v=new ArrayList<>();
-        v.add("I work for Limited Company");
-        v.add("I am a programmer");
-        v.add("I don't know");
-        Mockito.when(survey.getVariants()).thenReturn(v);
+        List<String> variants = new ArrayList<>();
+        variants.add("I work for Limited Company");
+        variants.add("I am a programmer");
+        variants.add("I don't know");
+        survey.setVariants(variants);
 
-        List<Survey> listSurvey=new ArrayList<>();
-        listSurvey.add(survey);
+        List<Survey> listSurvey = Collections.singletonList(survey);
 
-        Mockito.when(surveyDAOSpy.findAll()).thenReturn(listSurvey);
+        Mockito.when(surveyDAO.findAll()).thenReturn(listSurvey);
 
-        ServiceIO serviceIO=new ServiceConsole(System.in,System.out);
+        ServiceIO serviceIO = Mockito.mock(ServiceIO.class);
+        Mockito.when(serviceIO.input()).thenReturn(rightAnswer);
 
-        ServiceSurveyImpl serviceSurveyImpl = new ServiceSurveyImpl(surveyDAOSpy,serviceIO);
-        serviceSurveyImpl.test();
+        ServiceUser serviceUser = Mockito.mock(ServiceUser.class);
+        Mockito.when(serviceUser.askUserAnswer()).thenReturn(rightAnswer);
 
-        assertSame(serviceSurveyImpl.getResult(),serviceSurveyImpl.getResultMax());
+        ServiceResult serviceResult = Mockito.mock(ServiceResult.class);
+        Mockito.doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                serviceIO.output("your result is 1 of the 1 points");
+                return null;
+            }
+        }).when(serviceResult).show();
+
+        ServiceSurvey serviceSurvey = new ServiceSurveyImpl(surveyDAO, serviceIO,serviceUser,serviceResult);
+        serviceSurvey.test();
+        Mockito.verify(serviceIO).output("your result is 1 of the 1 points");
     }
 }
 

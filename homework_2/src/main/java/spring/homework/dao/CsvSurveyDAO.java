@@ -18,11 +18,11 @@ import spring.homework.exceptions.SurveyException;
 import spring.homework.services.ServiceSurvey;
 
 @Repository
-public class CsvDAO implements SurveyDAO {
+public class CsvSurveyDAO implements SurveyDAO {
 
     private final String fileName;
 
-    public CsvDAO(@Value("${csvFile}") String fileName){
+    public CsvSurveyDAO(@Value("${csvFile}") String fileName){
         this.fileName=fileName;
     }
 
@@ -37,7 +37,7 @@ public class CsvDAO implements SurveyDAO {
             return myList;
         }
         catch (Exception e){
-            throw new SurveyException(e.getMessage());
+            throw new SurveyException(e);
         }
     }
 }

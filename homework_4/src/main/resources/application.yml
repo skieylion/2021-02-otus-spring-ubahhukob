@@ -1,0 +1,5 @@
+csvData: i18n/data/data_ru_RU.csv
+languageTag: ru-RU
+spring:
+  messages:
+    basename: i18n/messages/messages

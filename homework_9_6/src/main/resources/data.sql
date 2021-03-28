@@ -1,0 +1,1 @@
+insert into Book(id,name) values(1,'any name')

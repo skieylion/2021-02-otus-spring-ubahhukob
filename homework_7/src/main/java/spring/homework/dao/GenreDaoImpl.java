@@ -25,34 +25,34 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
+    public long save(Genre genre) {
+        if(genre.getId()!=0){
+            Map<String, Object> params = Map.of(
+                    "id", genre.getId(),
+                    "name", genre.getName()
+            );
+
+            namedParameterJdbcOperations.update(
+                    "update GENRES set name=:name where id = :id", params
+            );
+        } else {
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("name", genre.getName());
+            KeyHolder kh = new GeneratedKeyHolder();
+            namedParameterJdbcOperations.update("insert into GENRES(name) values(:name)", params, kh);
+
+            return kh.getKey().longValue();
+        }
+        return 0;
+    }
+
+    @Override
     public Genre read(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        Genre genre=namedParameterJdbcOperations.queryForObject(
-                "select id,name from GENRES where id = :id", params,new GenreDaoImpl.GenreMapper()
+        Genre genre = namedParameterJdbcOperations.queryForObject(
+                "select id,name from GENRES where id = :id", params, new GenreDaoImpl.GenreMapper()
         );
         return genre;
-    }
-
-    @Override
-    public long create(Genre genre) {
-        MapSqlParameterSource params=new MapSqlParameterSource();
-        params.addValue("name",genre.getName());
-        KeyHolder kh=new GeneratedKeyHolder();
-        namedParameterJdbcOperations.update("insert into GENRES(name) values(:name)",params,kh);
-
-        return kh.getKey().longValue();
-    }
-
-    @Override
-    public void update(Genre genre) {
-        Map<String, Object> params = Map.of(
-                "id",genre.getId(),
-                "name",genre.getName()
-        );
-
-        namedParameterJdbcOperations.update(
-                "update GENRES set name=:name where id = :id", params
-        );
     }
 
     @Override

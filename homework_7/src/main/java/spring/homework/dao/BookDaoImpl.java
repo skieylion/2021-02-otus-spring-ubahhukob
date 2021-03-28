@@ -29,51 +29,42 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
-    public long create(Book book) {
+    public long save(Book book) {
+        if(book.getId()!=0){
+            long author_id=authorDao.save(book.getAuthor());
+            long genre_id=genreDao.save(book.getGenre());
 
-        Author author=book.getAuthor();
-        long authorId=authorDao.create(author);
-        Genre genre=book.getGenre();
-        long genreId=genreDao.create(genre);
+            Map<String, Object> params = Map.of(
+                    "id", book.getId(),
+                    "name", book.getName(),
+                    "author_id",author_id!=0?author_id:book.getAuthor().getId(),
+                    "genre_id",genre_id!=0?genre_id:book.getGenre().getId()
+            );
 
-        MapSqlParameterSource params=new MapSqlParameterSource();
-        params.addValue("name",book.getName());
-        params.addValue("author_id",authorId);
-        params.addValue("genre_id",genreId);
+            namedParameterJdbcOperations.update(
+                    "update BOOKS set name=:name,author_id=:author_id, genre_id=:genre_id where id = :id",
+                    params
+            );
+        } else{
+            Author author = book.getAuthor();
+            long authorId = authorDao.save(author);
+            Genre genre = book.getGenre();
+            long genreId = genreDao.save(genre);
 
-        KeyHolder kh=new GeneratedKeyHolder();
-        namedParameterJdbcOperations.update("insert into BOOKS(name,author_id,genre_id) values(:name,:author_id,:genre_id)",params,kh);
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("name", book.getName());
+            params.addValue("author_id", authorId!=0?authorId:author.getId());
+            params.addValue("genre_id", genreId!=0?genreId:genre.getId());
 
-        return kh.getKey().longValue();
-    }
-
-    @Override
-    public Book read(long id) {
-        Map<String, Object> params = Collections.singletonMap("id", id);
-        Book book=namedParameterJdbcOperations.queryForObject(
-                "select id,name,author_id,genre_id from BOOKS where id = :id", params,new BookMapper()
-        );
-        book.setAuthor(authorDao.read(book.getAuthor().getId()));
-        book.setGenre(genreDao.read(book.getGenre().getId()));
-
-        return book;
-    }
-
-    @Override
-    public void update(Book book) {
-        authorDao.update(book.getAuthor());
-        genreDao.update(book.getGenre());
-
-        Map<String, Object> params = Map.of(
-                "id",book.getId(),
-                "name",book.getName(),
-                "author_id",book.getAuthor().getId(),
-                "genre_id",book.getGenre().getId()
-        );
-
-        namedParameterJdbcOperations.update(
-                "update BOOKS set name=:name,author_id=:author_id, genre_id=:genre_id where id = :id", params
-        );
+            KeyHolder kh = new GeneratedKeyHolder();
+            namedParameterJdbcOperations.update(
+                    "insert into BOOKS(name,author_id,genre_id) values(:name,:author_id,:genre_id)",
+                    params,
+                    kh
+            );
+            return kh.getKey().longValue();
+        }
+        return 0;
     }
 
     @Override
@@ -84,11 +75,48 @@ public class BookDaoImpl implements BookDao {
         );
     }
 
+
+
+    @Override
+    public Book read(long id) {
+        Map<String, Object> params = Collections.singletonMap("id", id);
+        Book book = namedParameterJdbcOperations.queryForObject(
+                "select "
+                    +"b.id as id,"
+                    +"b.name as name,"
+                    +"a.id as author_id,"
+                    +"a.fullname,"
+                    +"a.alias,"
+                    +"g.id as genre_id,"
+                    +"g.name as genre_name "
+                +"from BOOKS b "
+                +"left join AUTHORS a "
+                    +"on b.author_id=a.id "
+                +"left join GENRES "
+                    +"g on g.id=b.genre_id "
+                +"where b.id=:id",
+                params, new BookMapper()
+        );
+        return book;
+    }
+
     @Override
     public List<Book> readAll() {
-        List<Book> bookList=namedParameterJdbcOperations.getJdbcOperations().queryForObject(
-                "select b.id as id,b.name as name,a.id as author_id,a.fullname,a.alias,g.id as genre_id,g.name as genre_name from BOOKS b left join AUTHORS a on b.author_id=a.id left join GENRES g on g.id=b.genre_id",
-                new BookMapperList()
+        List<Book> bookList = namedParameterJdbcOperations.query(
+                "select "
+                        +"b.id as id,"
+                        +"b.name as name,"
+                        +"a.id as author_id,"
+                        +"a.fullname,"
+                        +"a.alias,"
+                        +"g.id as genre_id,"
+                        +"g.name as genre_name "
+                    +"from BOOKS b "
+                    +"left join AUTHORS a "
+                        +"on b.author_id=a.id "
+                    +"left join GENRES "
+                        +"g on g.id=b.genre_id",
+                new BookMapper()
         );
         return bookList;
     }
@@ -96,36 +124,19 @@ public class BookDaoImpl implements BookDao {
     private static class BookMapper implements RowMapper<Book> {
         @Override
         public Book mapRow(ResultSet resultSet, int i) throws SQLException {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            long authorId=resultSet.getLong("author_id");
-            long genreId=resultSet.getLong("genre_id");
-            Author author=new Author(authorId);
-            Genre genre=new Genre(genreId);
+            long bookId = resultSet.getLong("id");
+            String bookName = resultSet.getString("name");
+            long authorId = resultSet.getLong("author_id");
+            String authorFullName = resultSet.getString("fullname");
+            String authorAlias = resultSet.getString("alias");
+            long genreId = resultSet.getLong("genre_id");
+            String genreName = resultSet.getString("genre_name");
 
-            return new Book(id, name,author,genre);
-        }
-    }
-    private static class BookMapperList implements RowMapper<List<Book>> {
-        @Override
-        public List<Book> mapRow(ResultSet resultSet, int i) throws SQLException {
-            List<Book> bookList=new ArrayList<>();
-            while(resultSet.next()){
-                long bookId=resultSet.getLong("id");
-                String bookName=resultSet.getString("name");
-                long authorId=resultSet.getLong("author_id");
-                String authorFullName=resultSet.getString("fullname");
-                String authorAlias=resultSet.getString("alias");
-                long genreId=resultSet.getLong("genre_id");
-                String genreName=resultSet.getString("genre_name");
+            Author author = new Author(authorId, authorFullName, authorAlias);
+            Genre genre = new Genre(genreId, genreName);
+            Book book = new Book(bookId, bookName, author, genre);
 
-                Author author=new Author(authorId,authorFullName,authorAlias);
-                Genre genre=new Genre(genreId,genreName);
-                Book book=new Book(bookId,bookName,author,genre);
-
-                bookList.add(book);
-            }
-            return bookList;
+            return book;
         }
     }
 }

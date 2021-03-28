@@ -41,7 +41,7 @@ public class ComponentCommand {
     public String updateBook(@ShellOption long bookId,@ShellOption String newName){
         Book book=bookDao.read(bookId);
         book.setName(newName);
-        bookDao.update(book);
+        bookDao.save(book);
         return bookDao.read(bookId).toString();
     }
 
@@ -55,10 +55,10 @@ public class ComponentCommand {
     public String createBook(@ShellOption String bookName,@ShellOption String authorName, @ShellOption String genreName){
         Author author=new Author(authorName,"");
         Genre genre=new Genre(genreName);
-        author.setId(authorDao.create(author));
-        genre.setId(genreDao.create(genre));
+        author.setId(authorDao.save(author));
+        genre.setId(genreDao.save(genre));
         Book book=new Book(bookName,author,genre);
-        long id=bookDao.create(book);
+        long id=bookDao.save(book);
         return bookDao.read(id).toString();
     }
 }

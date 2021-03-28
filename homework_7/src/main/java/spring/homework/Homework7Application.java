@@ -16,9 +16,9 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class Homework7Application {
 
-	public static void main(String[] args) throws SQLException {
-		SpringApplication.run(Homework7Application.class, args);
-		//Console.main(args); 
-	}
+    public static void main(String[] args) throws SQLException {
+        SpringApplication.run(Homework7Application.class, args);
+        //Console.main(args);
+    }
 
 }

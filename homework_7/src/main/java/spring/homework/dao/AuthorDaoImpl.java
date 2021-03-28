@@ -24,34 +24,39 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Author read(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        Author author=namedParameterJdbcOperations.queryForObject(
-                "select id,fullname,alias from AUTHORS where id = :id", params,new AuthorDaoImpl.AuthorMapper()
+        Author author = namedParameterJdbcOperations.queryForObject(
+                "select id,fullname,alias from AUTHORS where id = :id", params, new AuthorDaoImpl.AuthorMapper()
         );
         return author;
     }
 
     @Override
-    public long create(Author author) {
-        MapSqlParameterSource params=new MapSqlParameterSource();
-        params.addValue("fullname",author.getFullName());
-        params.addValue("alias",author.getAlias());
-        KeyHolder kh=new GeneratedKeyHolder();
-        namedParameterJdbcOperations.update("insert into AUTHORS(fullname,alias) values(:fullname,:alias)",params,kh);
+    public long save(Author author) {
+        if (author.getId() != 0) {
+            Map<String, Object> params = Map.of(
+                    "id", author.getId(),
+                    "fullname", author.getFullName(),
+                    "alias", author.getAlias()
+            );
 
-        return kh.getKey().longValue();
-    }
+            namedParameterJdbcOperations.update(
+                    "update AUTHORS set fullname=:fullname, alias=:alias where id = :id",
+                    params
+            );
+        } else {
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("fullname", author.getFullName());
+            params.addValue("alias", author.getAlias());
+            KeyHolder kh = new GeneratedKeyHolder();
+            namedParameterJdbcOperations.update(
+                    "insert into AUTHORS(fullname,alias) values(:fullname,:alias)",
+                    params,
+                    kh
+            );
+            return kh.getKey().longValue();
+        }
 
-    @Override
-    public void update(Author author) {
-        Map<String, Object> params = Map.of(
-                "id",author.getId(),
-                "fullname",author.getFullName(),
-                "alias",author.getAlias()
-        );
-
-        namedParameterJdbcOperations.update(
-                "update AUTHORS set fullname=:fullname, alias=:alias where id = :id", params
-        );
+        return 0;
     }
 
     @Override
@@ -67,9 +72,9 @@ public class AuthorDaoImpl implements AuthorDao {
         public Author mapRow(ResultSet resultSet, int i) throws SQLException {
             long id = resultSet.getLong("id");
             String name = resultSet.getString("fullname");
-            String alias=resultSet.getString("alias");
+            String alias = resultSet.getString("alias");
 
-            return new Author(id, name,alias);
+            return new Author(id, name, alias);
         }
     }
 }

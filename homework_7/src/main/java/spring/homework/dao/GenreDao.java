@@ -1,11 +1,13 @@
 package spring.homework.dao;
 
 import spring.homework.domain.Author;
+import spring.homework.domain.Book;
 import spring.homework.domain.Genre;
 
 public interface GenreDao {
+    long save(Genre genre);
+
     Genre read(long id);
-    long create(Genre genre);
-    void update(Genre genre);
+
     void delete(long id);
 }

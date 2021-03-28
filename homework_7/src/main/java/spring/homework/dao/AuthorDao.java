@@ -5,7 +5,8 @@ import spring.homework.domain.Book;
 
 public interface AuthorDao {
     Author read(long id);
-    long create(Author author);
-    void update(Author author);
+
+    long save(Author author);
+
     void delete(long id);
 }

@@ -15,8 +15,7 @@ import java.util.Iterator;
 public class Homework96Application {
 
 	public static void main(String[] args) throws SQLException, InterruptedException {
-		SpringApplication.run(Homework96Application.class, args);
-		AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(Homework96Application.class);
+		var context=SpringApplication.run(Homework96Application.class, args);
 		CourseRepository repository=context.getBean(CourseRepository.class);
 
 		System.out.println("----------------");

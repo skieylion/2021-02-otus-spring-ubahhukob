@@ -27,6 +27,7 @@ hs_err_pid*
 *.iml
 
 target/
+.mvn/
 
 homework_7/
 homework_9_6/

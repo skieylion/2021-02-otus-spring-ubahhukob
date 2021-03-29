@@ -3,14 +3,14 @@ package spring.homework.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name="AUTHORS")
+@Table(name = "AUTHORS")
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "FULLNAME")
     private String fullName;
-    @Column(name="alias")
+    @Column(name = "alias")
     private String alias;
 
     public Author(long id, String fullName, String alias) {
@@ -27,7 +27,10 @@ public class Author {
         this.fullName = fullName;
         this.alias = alias;
     }
-    public Author() { }
+
+    public Author() {
+    }
+
     public Author(long id) {
         this.id = id;
     }

@@ -24,7 +24,7 @@ public class GenreDaoImpl implements GenreDao {
     @Override
     @Transactional
     public long save(Genre genre) {
-        if(genre.getId()!=0){
+        if (genre.getId() != 0) {
             em.merge(genre);
         } else {
             em.persist(genre);
@@ -35,14 +35,14 @@ public class GenreDaoImpl implements GenreDao {
 
     @Override
     public Genre read(long id) {
-        Genre genre=em.find(Genre.class,id);
+        Genre genre = em.find(Genre.class, id);
         return genre;
     }
 
     @Override
     @Transactional
     public void delete(long id) {
-        Genre genre=em.merge(new Genre(id));
+        Genre genre = em.merge(new Genre(id));
         em.remove(genre);
     }
 }

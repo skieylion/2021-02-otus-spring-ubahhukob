@@ -3,7 +3,7 @@ package spring.homework.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name="GENRES")
+@Table(name = "GENRES")
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,7 +11,8 @@ public class Genre {
     @Column(name = "name")
     private String name;
 
-    public Genre(){}
+    public Genre() {
+    }
 
     public Genre(long id, String name) {
         this.id = id;

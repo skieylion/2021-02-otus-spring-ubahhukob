@@ -2,8 +2,8 @@ package spring.homework.domain;
 
 import javax.persistence.*;
 
-@Entity(name="COMMENTS")
-@Table(name="COMMENTS")
+@Entity(name = "COMMENTS")
+@Table(name = "COMMENTS")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

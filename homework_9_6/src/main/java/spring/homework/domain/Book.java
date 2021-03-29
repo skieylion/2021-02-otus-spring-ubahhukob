@@ -1,12 +1,8 @@
 package spring.homework.domain;
 
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 
-@Entity(name="BOOKS")
+@Entity(name = "BOOKS")
 @Table(name = "BOOKS")
 public class Book {
     @Id
@@ -49,7 +45,7 @@ public class Book {
 
     }
 
-    public Book(String name, Author author, Genre genre,Comment comment) {
+    public Book(String name, Author author, Genre genre, Comment comment) {
         this.name = name;
         this.author = author;
         this.genre = genre;
@@ -65,7 +61,7 @@ public class Book {
     }
 
     public Book(long id) {
-        this.id=id;
+        this.id = id;
     }
 
     public Author getAuthor() {

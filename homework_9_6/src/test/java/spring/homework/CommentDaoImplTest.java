@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Проверка репозитория комментария")
 @SpringBootTest
 @Import({CommentDaoImpl.class})
-class HWCommentTest {
+class CommentDaoImplTest {
 
     @Autowired
     private CommentDaoImpl commentDao;

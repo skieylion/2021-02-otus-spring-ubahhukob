@@ -6,7 +6,6 @@ spring:
     username: sa
     data: data-test.sql
     schema: schema.sql
-
   jpa:
     generate-ddl: false
     hibernate:
@@ -15,4 +14,3 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-

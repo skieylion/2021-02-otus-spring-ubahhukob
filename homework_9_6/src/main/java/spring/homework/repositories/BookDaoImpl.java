@@ -2,6 +2,7 @@ package spring.homework.repositories;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import spring.homework.domain.Author;
 import spring.homework.domain.Book;
 
 import javax.persistence.EntityManager;
@@ -25,19 +26,29 @@ public class BookDaoImpl implements BookDao {
         this.commentDao = commentDao;
     }
 
+    private void update(Book book) {
+        em.merge(book);
+    }
+
+    private long create(Book book) {
+        em.persist(book);
+        return book.getId();
+    }
+
+
     @Override
     @Transactional
     public long save(Book book) {
         authorDao.save(book.getAuthor());
         genreDao.save(book.getGenre());
         commentDao.save(book.getComment());
-        if (book.getId() != 0) {
-            em.merge(book);
+        long id = book.getId();
+        if (id != 0) {
+            update(book);
         } else {
-            em.persist(book);
-            return book.getId();
+            return create(book);
         }
-        return 0;
+        return id;
     }
 
     @Override

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Проверка репозитория жанров")
 @SpringBootTest
 @Import({GenreDaoImpl.class})
-class HWGenreTest {
+class GenreDaoImplTest {
 
     @Autowired
     private GenreDaoImpl genreDao;

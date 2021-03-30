@@ -20,17 +20,25 @@ public class AuthorDaoImpl implements AuthorDao {
         return author;
     }
 
+    private void update(Author author) {
+        em.merge(author);
+    }
+
+    private long create(Author author) {
+        em.persist(author);
+        return author.getId();
+    }
+
     @Override
     @Transactional
     public long save(Author author) {
-        if (author.getId() != 0) {
-            em.merge(author);
+        long id = author.getId();
+        if (id != 0) {
+            update(author);
         } else {
-            em.persist(author);
-            return author.getId();
+            return create(author);
         }
-
-        return 0;
+        return id;
     }
 
     @Override

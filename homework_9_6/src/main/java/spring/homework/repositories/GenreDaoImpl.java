@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import spring.homework.domain.Book;
 import spring.homework.domain.Genre;
 
 import javax.persistence.EntityManager;
@@ -21,16 +22,25 @@ public class GenreDaoImpl implements GenreDao {
     @PersistenceContext
     private EntityManager em;
 
+    private void update(Genre genre) {
+        em.merge(genre);
+    }
+
+    private long create(Genre genre) {
+        em.persist(genre);
+        return genre.getId();
+    }
+
     @Override
     @Transactional
     public long save(Genre genre) {
-        if (genre.getId() != 0) {
-            em.merge(genre);
+        long id = genre.getId();
+        if (id != 0) {
+            update(genre);
         } else {
-            em.persist(genre);
-            return genre.getId();
+            return create(genre);
         }
-        return 0;
+        return id;
     }
 
     @Override

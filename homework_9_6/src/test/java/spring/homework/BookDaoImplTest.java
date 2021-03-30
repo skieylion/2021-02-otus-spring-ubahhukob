@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Проверка репозитория книг")
 @SpringBootTest
 @Import({BookDaoImpl.class, GenreDaoImpl.class, AuthorDaoImpl.class})
-class HWBookTest {
+class BookDaoImplTest {
 
     @Autowired
     private BookDaoImpl bookDao;

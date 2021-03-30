@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Проверка репозитория автора")
 @SpringBootTest
 @Import({AuthorDaoImpl.class})
-class HWAuthorTest {
+class AuthorDaoImplTest {
 
     @Autowired
     private AuthorDao authorDao;

@@ -3,6 +3,7 @@ package spring.homework.repositories;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Comment;
+import spring.homework.domain.Genre;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,17 +23,25 @@ public class CommentDaoImpl implements CommentDao {
         return em.find(Comment.class, id);
     }
 
+    private void update(Comment comment) {
+        em.merge(comment);
+    }
+
+    private long create(Comment comment) {
+        em.persist(comment);
+        return comment.getId();
+    }
+
     @Override
     @Transactional
     public long save(Comment comment) {
-        if (comment.getId() != 0) {
-            em.merge(comment);
+        long id = comment.getId();
+        if (id != 0) {
+            update(comment);
         } else {
-            em.persist(comment);
-            return comment.getId();
+            return create(comment);
         }
-
-        return 0;
+        return id;
     }
 
     @Override

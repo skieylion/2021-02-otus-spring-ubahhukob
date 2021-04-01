@@ -2,14 +2,19 @@ package spring.homework.domain;
 
 import javax.persistence.*;
 
-@Entity(name = "COMMENTS")
-@Table(name = "COMMENTS")
+@Entity
+@Table(name = "COMMENT")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "description")
     private String description;
+
+    @ManyToOne(targetEntity = Book.class)
+    @JoinColumn(name = "book_id")
+    private Book book;
+
 
     public Comment() {
     }
@@ -48,6 +53,7 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
+                ", book=" + book +
                 '}';
     }
 }

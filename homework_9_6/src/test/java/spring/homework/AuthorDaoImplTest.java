@@ -4,6 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import spring.homework.domain.Author;
@@ -13,12 +16,15 @@ import spring.homework.repositories.AuthorDaoImpl;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Проверка репозитория автора")
-@SpringBootTest
+@DataJpaTest
 @Import({AuthorDaoImpl.class})
 class AuthorDaoImplTest {
 
     @Autowired
     private AuthorDao authorDao;
+
+    @Autowired
+    private TestEntityManager em;
 
     @DisplayName("read author")
     @Test
@@ -46,7 +52,7 @@ class AuthorDaoImplTest {
     @DisplayName("delete author")
     @Test
     void deleteAuthor() {
-        authorDao.delete(3);
-        assertNull(authorDao.read(3));
+        authorDao.delete(4);
+        assertNull(authorDao.read(4));
     }
 }

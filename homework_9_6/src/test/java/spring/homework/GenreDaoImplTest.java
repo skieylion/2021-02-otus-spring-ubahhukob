@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,12 +15,15 @@ import spring.homework.repositories.GenreDaoImpl;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Проверка репозитория жанров")
-@SpringBootTest
+@DataJpaTest
 @Import({GenreDaoImpl.class})
 class GenreDaoImplTest {
 
     @Autowired
     private GenreDaoImpl genreDao;
+
+    @Autowired
+    private TestEntityManager em;
 
     @DisplayName("read genre")
     @Test
@@ -46,7 +51,7 @@ class GenreDaoImplTest {
     @DisplayName("delete genre")
     @Test
     void deleteGenre() {
-        genreDao.delete(3);
-        assertNull(genreDao.read(3));
+        genreDao.delete(5);
+        assertNull(genreDao.read(5));
     }
 }

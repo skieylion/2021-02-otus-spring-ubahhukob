@@ -1,9 +1,12 @@
 package spring.homework.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-@Entity(name = "BOOKS")
-@Table(name = "BOOKS")
+@Entity
+@Table(name = "BOOK")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,30 +14,31 @@ public class Book {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(targetEntity = Author.class)
+    @ManyToOne(targetEntity = Author.class)
     @JoinColumn(name = "author_id")
     private Author author;
-    @OneToOne(targetEntity = Genre.class)
+    @ManyToOne(targetEntity = Genre.class)
     @JoinColumn(name = "genre_id")
     private Genre genre;
-    @OneToOne(targetEntity = Comment.class)
-    @JoinColumn(name = "comment_id")
-    private Comment comment;
 
-    public Comment getComment() {
-        return comment;
+    @OneToMany(targetEntity = Comment.class,mappedBy = "book",fetch = FetchType.EAGER)
+    private List<Comment> comments;
+
+    public List<Comment> getComments() {
+        if(comments==null) return new ArrayList<>();
+        return comments;
     }
 
-    public void setComment(Comment comment) {
-        this.comment = comment;
+    public void setComment(List<Comment> comments) {
+        this.comments = comments;
     }
 
-    public Book(long id, String name, Author author, Genre genre, Comment comment) {
+    public Book(long id, String name, Author author, Genre genre, List<Comment> comments) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.genre = genre;
-        this.comment = comment;
+        this.comments = comments;
     }
 
     public Book(long id, String name, Author author, Genre genre) {
@@ -45,11 +49,11 @@ public class Book {
 
     }
 
-    public Book(String name, Author author, Genre genre, Comment comment) {
+    public Book(String name, Author author, Genre genre, List<Comment> comments) {
         this.name = name;
         this.author = author;
         this.genre = genre;
-        this.comment = comment;
+        this.comments = comments;
     }
 
     public Book() {
@@ -98,12 +102,20 @@ public class Book {
 
     @Override
     public String toString() {
+        StringBuilder str=new StringBuilder();
+        if(comments!=null) {
+            str.append("[");
+            comments.forEach(comment -> {
+                str.append("{ id=" + comment.getId() + ", description='" + comment.getDescription() + "'}");
+            });
+            str.append("]");
+        }
         return "Book{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", author=" + author +
                 ", genre=" + genre +
-                ", comment=" + comment +
+                ", comments="+str.toString()+
                 '}';
     }
 }

@@ -7,6 +7,7 @@ import spring.homework.domain.Genre;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 @Repository
 public class CommentDaoImpl implements CommentDao {
@@ -22,18 +23,17 @@ public class CommentDaoImpl implements CommentDao {
     public Comment read(long id) {
         return em.find(Comment.class, id);
     }
-
+    @Transactional
     private void update(Comment comment) {
         em.merge(comment);
     }
-
+    @Transactional
     private long create(Comment comment) {
         em.persist(comment);
         return comment.getId();
     }
 
     @Override
-    @Transactional
     public long save(Comment comment) {
         long id = comment.getId();
         if (id != 0) {
@@ -47,7 +47,8 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     @Transactional
     public void delete(long id) {
-        Comment comment = em.merge(new Comment(id));
-        em.remove(comment);
+        Query query = em.createQuery("delete Comment e where e.id=:id");
+        query.setParameter("id",id);
+        query.executeUpdate();
     }
 }

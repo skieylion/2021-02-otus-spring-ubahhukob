@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,16 +15,20 @@ import spring.homework.repositories.CommentDaoImpl;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Проверка репозитория комментария")
-@SpringBootTest
+@DataJpaTest
 @Import({CommentDaoImpl.class})
 class CommentDaoImplTest {
 
     @Autowired
     private CommentDaoImpl commentDao;
 
+    @Autowired
+    private TestEntityManager em;
+
     @DisplayName("read comment")
     @Test
     void readComment() {
+        System.out.println(commentDao.read(1));
         assertTrue("Какая прекрасная книга".equals(commentDao.read(1).getDescription()));
     }
 

@@ -7,6 +7,7 @@ import spring.homework.domain.Author;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 @Repository
 public class AuthorDaoImpl implements AuthorDao {
@@ -19,18 +20,17 @@ public class AuthorDaoImpl implements AuthorDao {
         Author author = em.find(Author.class, id);
         return author;
     }
-
+    @Transactional
     private void update(Author author) {
         em.merge(author);
     }
-
+    @Transactional
     private long create(Author author) {
         em.persist(author);
         return author.getId();
     }
 
     @Override
-    @Transactional
     public long save(Author author) {
         long id = author.getId();
         if (id != 0) {
@@ -44,7 +44,8 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     @Transactional
     public void delete(long id) {
-        Author author = em.merge(new Author(id));
-        em.remove(author);
+        Query query = em.createQuery("delete Author a where a.id=:id");
+        query.setParameter("id",id);
+        query.executeUpdate();
     }
 }

@@ -12,6 +12,7 @@ import spring.homework.domain.Genre;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -21,18 +22,17 @@ import java.util.Map;
 public class GenreDaoImpl implements GenreDao {
     @PersistenceContext
     private EntityManager em;
-
+    @Transactional
     private void update(Genre genre) {
         em.merge(genre);
     }
-
+    @Transactional
     private long create(Genre genre) {
         em.persist(genre);
         return genre.getId();
     }
 
     @Override
-    @Transactional
     public long save(Genre genre) {
         long id = genre.getId();
         if (id != 0) {
@@ -52,7 +52,8 @@ public class GenreDaoImpl implements GenreDao {
     @Override
     @Transactional
     public void delete(long id) {
-        Genre genre = em.merge(new Genre(id));
-        em.remove(genre);
+        Query query = em.createQuery("delete Genre e where e.id=:id");
+        query.setParameter("id",id);
+        query.executeUpdate();
     }
 }

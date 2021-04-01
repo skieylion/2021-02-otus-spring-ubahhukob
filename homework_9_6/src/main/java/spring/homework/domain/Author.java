@@ -3,7 +3,7 @@ package spring.homework.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "AUTHORS")
+@Table(name = "AUTHOR")
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,6 +7,7 @@ import spring.homework.domain.Book;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.*;
 
 
@@ -25,11 +26,11 @@ public class BookDaoImpl implements BookDao {
         this.genreDao = genreDao;
         this.commentDao = commentDao;
     }
-
+    @Transactional
     private void update(Book book) {
         em.merge(book);
     }
-
+    @Transactional
     private long create(Book book) {
         em.persist(book);
         return book.getId();
@@ -37,11 +38,10 @@ public class BookDaoImpl implements BookDao {
 
 
     @Override
-    @Transactional
     public long save(Book book) {
         authorDao.save(book.getAuthor());
         genreDao.save(book.getGenre());
-        commentDao.save(book.getComment());
+        book.getComments().forEach(comment -> commentDao.save(comment));
         long id = book.getId();
         if (id != 0) {
             update(book);
@@ -54,8 +54,9 @@ public class BookDaoImpl implements BookDao {
     @Override
     @Transactional
     public void delete(long id) {
-        Book book = em.merge(new Book(id));
-        em.remove(book);
+        Query query = em.createQuery("delete Book e where e.id=:id");
+        query.setParameter("id",id);
+        query.executeUpdate();
     }
 
 
@@ -67,7 +68,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public List<Book> readAll() {
-        List<Book> books = em.createQuery("select e from BOOKS e", Book.class).getResultList();
+        List<Book> books = em.createQuery("select e from Book e join fetch e.author join fetch e.genre", Book.class).getResultList();
         return books;
     }
 }

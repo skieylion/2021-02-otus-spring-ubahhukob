@@ -10,59 +10,42 @@ import spring.homework.domain.Genre;
 import spring.homework.repositories.AuthorDao;
 import spring.homework.repositories.BookDao;
 import spring.homework.repositories.GenreDao;
+import spring.homework.services.ServiceBook;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @ShellComponent
 public class ComponentCommand {
-    private final BookDao bookDao;
-    private final AuthorDao authorDao;
-    private final GenreDao genreDao;
 
+    private final ServiceBook serviceBook;
 
-    public ComponentCommand(BookDao bookDao, AuthorDao authorDao, GenreDao genreDao) {
-        this.bookDao = bookDao;
-        this.authorDao = authorDao;
-        this.genreDao = genreDao;
+    public ComponentCommand(ServiceBook serviceBook) {
+        this.serviceBook = serviceBook;
     }
 
     @ShellMethod(value = "read command",key={"read book"})
     public String readBook(@ShellOption long bookId){
-        return bookDao.read(bookId).toString();
+        return serviceBook.read(bookId);
     }
 
     @ShellMethod(value = "read command",key={"read book all"})
     public String readAll(){
-        List<Book> bookList=bookDao.readAll();
-        return bookList.toString();
+        return serviceBook.readAll();
     }
 
     @ShellMethod(value = "update command",key={"update book"})
     public String updateBook(@ShellOption long bookId,@ShellOption String newName){
-        Book book=bookDao.read(bookId);
-        book.setName(newName);
-        bookDao.save(book);
-        return bookDao.read(bookId).toString();
+        return serviceBook.update(bookId,newName);
     }
 
     @ShellMethod(value = "delete command",key={"delete book"})
     public String deleteBook(@ShellOption long bookId){
-        bookDao.delete(bookId);
-        return "deleted the book";
+        return serviceBook.delete(bookId);
     }
 
     @ShellMethod(value = "create command",key={"create book"})
     public String createBook(@ShellOption String bookName,@ShellOption String authorName, @ShellOption String genreName,@ShellOption String commentValue){
-        Author author=new Author(authorName,"");
-        Genre genre=new Genre(genreName);
-        Comment comment=new Comment(commentValue);
-        author.setId(authorDao.save(author));
-        genre.setId(genreDao.save(genre));
-        List<Comment> commentList=new ArrayList<>();
-        commentList.add(comment);
-        Book book=new Book(bookName,author,genre,commentList);
-        long id=bookDao.save(book);
-        return bookDao.read(id).toString();
+        return serviceBook.create(bookName,authorName,genreName,commentValue);
     }
 }

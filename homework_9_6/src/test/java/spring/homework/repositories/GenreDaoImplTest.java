@@ -1,4 +1,4 @@
-package spring.homework;
+package spring.homework.repositories;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Genre;
 import spring.homework.repositories.GenreDaoImpl;
 
@@ -33,6 +34,7 @@ class GenreDaoImplTest {
 
     @DisplayName("update genre")
     @Test
+    @Transactional
     void updateGenre() {
         Genre genre = new Genre(4, "Проза");
 
@@ -42,6 +44,7 @@ class GenreDaoImplTest {
 
     @DisplayName("create genre")
     @Test
+    @Transactional
     void createGenre() {
         Genre genre = new Genre("Новый жанр");
         long id = genreDao.save(genre);
@@ -50,6 +53,7 @@ class GenreDaoImplTest {
 
     @DisplayName("delete genre")
     @Test
+    @Transactional
     void deleteGenre() {
         genreDao.delete(5);
         assertNull(genreDao.read(5));

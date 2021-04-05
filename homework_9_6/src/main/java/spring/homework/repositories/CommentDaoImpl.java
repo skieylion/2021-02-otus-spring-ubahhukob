@@ -23,11 +23,9 @@ public class CommentDaoImpl implements CommentDao {
     public Comment read(long id) {
         return em.find(Comment.class, id);
     }
-    @Transactional
     private void update(Comment comment) {
         em.merge(comment);
     }
-    @Transactional
     private long create(Comment comment) {
         em.persist(comment);
         return comment.getId();
@@ -45,7 +43,6 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    @Transactional
     public void delete(long id) {
         Query query = em.createQuery("delete Comment e where e.id=:id");
         query.setParameter("id",id);

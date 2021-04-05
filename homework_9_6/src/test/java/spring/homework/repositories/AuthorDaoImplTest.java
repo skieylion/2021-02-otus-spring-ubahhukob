@@ -1,4 +1,4 @@
-package spring.homework;
+package spring.homework.repositories;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Author;
 import spring.homework.repositories.AuthorDao;
 import spring.homework.repositories.AuthorDaoImpl;
@@ -34,6 +35,7 @@ class AuthorDaoImplTest {
 
     @DisplayName("update author")
     @Test
+    @Transactional
     void updateAuthor() {
         Author author = new Author(1, "Иванов Иван Иванович", "Иван");
 
@@ -43,6 +45,7 @@ class AuthorDaoImplTest {
 
     @DisplayName("create author")
     @Test
+    @Transactional
     void createAuthor() {
         Author author = new Author("Шекспир", "?");
         long id = authorDao.save(author);
@@ -51,6 +54,7 @@ class AuthorDaoImplTest {
 
     @DisplayName("delete author")
     @Test
+    @Transactional
     void deleteAuthor() {
         authorDao.delete(4);
         assertNull(authorDao.read(4));

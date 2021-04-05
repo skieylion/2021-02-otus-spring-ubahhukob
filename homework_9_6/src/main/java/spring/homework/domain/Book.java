@@ -14,14 +14,14 @@ public class Book {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne(targetEntity = Author.class)
+    @ManyToOne(targetEntity = Author.class,cascade = CascadeType.ALL)
     @JoinColumn(name = "author_id")
     private Author author;
-    @ManyToOne(targetEntity = Genre.class)
+    @ManyToOne(targetEntity = Genre.class,cascade = CascadeType.ALL)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    @OneToMany(targetEntity = Comment.class,mappedBy = "book",fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = Comment.class,mappedBy = "book",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     public List<Comment> getComments() {
@@ -102,20 +102,11 @@ public class Book {
 
     @Override
     public String toString() {
-        StringBuilder str=new StringBuilder();
-        if(comments!=null) {
-            str.append("[");
-            comments.forEach(comment -> {
-                str.append("{ id=" + comment.getId() + ", description='" + comment.getDescription() + "'}");
-            });
-            str.append("]");
-        }
         return "Book{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", author=" + author +
                 ", genre=" + genre +
-                ", comments="+str.toString()+
                 '}';
     }
 }

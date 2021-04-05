@@ -22,11 +22,11 @@ import java.util.Map;
 public class GenreDaoImpl implements GenreDao {
     @PersistenceContext
     private EntityManager em;
-    @Transactional
+
     private void update(Genre genre) {
         em.merge(genre);
     }
-    @Transactional
+
     private long create(Genre genre) {
         em.persist(genre);
         return genre.getId();
@@ -50,7 +50,6 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    @Transactional
     public void delete(long id) {
         Query query = em.createQuery("delete Genre e where e.id=:id");
         query.setParameter("id",id);

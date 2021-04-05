@@ -20,11 +20,9 @@ public class AuthorDaoImpl implements AuthorDao {
         Author author = em.find(Author.class, id);
         return author;
     }
-    @Transactional
     private void update(Author author) {
         em.merge(author);
     }
-    @Transactional
     private long create(Author author) {
         em.persist(author);
         return author.getId();
@@ -42,7 +40,6 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    @Transactional
     public void delete(long id) {
         Query query = em.createQuery("delete Author a where a.id=:id");
         query.setParameter("id",id);

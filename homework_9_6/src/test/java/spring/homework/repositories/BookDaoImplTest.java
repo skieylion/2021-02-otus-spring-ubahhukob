@@ -1,4 +1,4 @@
-package spring.homework;
+package spring.homework.repositories;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Author;
 import spring.homework.domain.Book;
 import spring.homework.domain.Comment;
@@ -39,17 +40,20 @@ class BookDaoImplTest {
     @Test
     void readBook() {
         Book book=bookDao.read(2);
-        assertTrue("Ruslan and Ludmila".equals(book.getName()));
+        assertEquals("Ruslan and Ludmila",book.getName());
     }
 
     @DisplayName("read book all")
     @Test
     void readBookAll() {
-        assertTrue(bookDao.readAll().size() > 0);
+        List<Book> books=bookDao.readAll();
+        System.out.println(books);
+        assertTrue(books.size() > 0);
     }
 
     @DisplayName("update book")
     @Test
+    @Transactional
     void updateBook() {
         Author author = new Author(1, "Иванов Иван Иванович", "Иван");
         Genre genre = new Genre(1, "Любой жанр");
@@ -63,6 +67,7 @@ class BookDaoImplTest {
 
     @DisplayName("delete book")
     @Test
+    @Transactional
     void deleteBook() {
         bookDao.delete(3);
         assertNull(bookDao.read(3));
@@ -70,6 +75,7 @@ class BookDaoImplTest {
 
     @DisplayName("create book")
     @Test
+    @Transactional
     void createBook() {
         Author author = new Author("Иванов Иван Иванович", "Иван2");
         Genre genre = new Genre("Любой жанр2");
@@ -79,6 +85,8 @@ class BookDaoImplTest {
 
         Book book = new Book("Новая книга2", author, genre, comments);
         long id = bookDao.save(book);
-        assertSame(bookDao.read(id).getName(), "Новая книга2");
+        Book book2=bookDao.read(id);
+        System.out.println(book2);
+        assertSame(book2.getName(), "Новая книга2");
     }
 }

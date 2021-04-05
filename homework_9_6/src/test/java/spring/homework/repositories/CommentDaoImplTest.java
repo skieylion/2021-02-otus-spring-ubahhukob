@@ -1,4 +1,4 @@
-package spring.homework;
+package spring.homework.repositories;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Comment;
 import spring.homework.repositories.CommentDaoImpl;
 
@@ -34,6 +35,7 @@ class CommentDaoImplTest {
 
     @DisplayName("update comment")
     @Test
+    @Transactional
     void updateComment() {
         Comment comment = new Comment(2, "Новая книга");
 
@@ -43,6 +45,7 @@ class CommentDaoImplTest {
 
     @DisplayName("create comment")
     @Test
+    @Transactional
     void createComment() {
         Comment comment = new Comment("Так так");
         long id = commentDao.save(comment);
@@ -51,6 +54,7 @@ class CommentDaoImplTest {
 
     @DisplayName("delete comment")
     @Test
+    @Transactional
     void deleteComment() {
         commentDao.delete(4);
         assertNull(commentDao.read(4));

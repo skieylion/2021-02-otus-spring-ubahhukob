@@ -17,14 +17,7 @@ public class BookDaoImpl implements BookDao {
     @PersistenceContext
     private EntityManager em;
 
-    private final AuthorDao authorDao;
-    private final GenreDao genreDao;
-    private final CommentDao commentDao;
-
-    public BookDaoImpl(AuthorDao authorDao, GenreDao genreDao, CommentDao commentDao) {
-        this.authorDao = authorDao;
-        this.genreDao = genreDao;
-        this.commentDao = commentDao;
+    public BookDaoImpl() {
     }
     private void update(Book book) {
         em.merge(book);
@@ -62,7 +55,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public List<Book> readAll() {
-        List<Book> books = em.createQuery("select e from Book e join fetch e.author join fetch e.genre join fetch e.comments", Book.class).getResultList();
+        List<Book> books = em.createQuery("select e from Book e join fetch e.author join fetch e.genre ", Book.class).getResultList();
         return books;
     }
 }

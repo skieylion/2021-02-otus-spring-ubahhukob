@@ -35,7 +35,6 @@ class AuthorDaoImplTest {
 
     @DisplayName("update author")
     @Test
-    @Transactional
     void updateAuthor() {
         Author author = new Author(1, "Иванов Иван Иванович", "Иван");
 
@@ -45,7 +44,6 @@ class AuthorDaoImplTest {
 
     @DisplayName("create author")
     @Test
-    @Transactional
     void createAuthor() {
         Author author = new Author("Шекспир", "?");
         long id = authorDao.save(author);
@@ -54,7 +52,6 @@ class AuthorDaoImplTest {
 
     @DisplayName("delete author")
     @Test
-    @Transactional
     void deleteAuthor() {
         authorDao.delete(4);
         assertNull(authorDao.read(4));

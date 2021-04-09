@@ -35,7 +35,6 @@ class CommentDaoImplTest {
 
     @DisplayName("update comment")
     @Test
-    @Transactional
     void updateComment() {
         Comment comment = new Comment(2, "Новая книга");
 
@@ -45,7 +44,6 @@ class CommentDaoImplTest {
 
     @DisplayName("create comment")
     @Test
-    @Transactional
     void createComment() {
         Comment comment = new Comment("Так так");
         long id = commentDao.save(comment);
@@ -54,7 +52,6 @@ class CommentDaoImplTest {
 
     @DisplayName("delete comment")
     @Test
-    @Transactional
     void deleteComment() {
         commentDao.delete(4);
         assertNull(commentDao.read(4));

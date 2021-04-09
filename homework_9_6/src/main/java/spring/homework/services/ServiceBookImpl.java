@@ -30,6 +30,7 @@ public class ServiceBookImpl implements ServiceBook{
         return bookDao.read(id).toString();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public String readAll() {
         List<Book> bookList=bookDao.readAll();
@@ -63,6 +64,7 @@ public class ServiceBookImpl implements ServiceBook{
         List<Comment> commentList=new ArrayList<>();
         commentList.add(comment);
         Book book=new Book(bookName,author,genre,commentList);
+        comment.setBook(book);
         long id=bookDao.save(book);
         return bookDao.read(id).toString();
     }

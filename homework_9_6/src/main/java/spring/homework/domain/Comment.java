@@ -48,6 +48,14 @@ public class Comment {
         this.description = description;
     }
 
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
     @Override
     public String toString() {
         return "Comment{" +

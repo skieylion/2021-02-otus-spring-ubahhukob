@@ -1,5 +1,9 @@
 package spring.homework.domain;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,7 @@ public class Book {
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
+    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(targetEntity = Comment.class,mappedBy = "book",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Comment> comments;
 

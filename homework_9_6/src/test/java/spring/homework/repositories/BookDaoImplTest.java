@@ -53,7 +53,6 @@ class BookDaoImplTest {
 
     @DisplayName("update book")
     @Test
-    @Transactional
     void updateBook() {
         Author author = new Author(1, "Иванов Иван Иванович", "Иван");
         Genre genre = new Genre(1, "Любой жанр");
@@ -67,7 +66,6 @@ class BookDaoImplTest {
 
     @DisplayName("delete book")
     @Test
-    @Transactional
     void deleteBook() {
         bookDao.delete(3);
         assertNull(bookDao.read(3));
@@ -75,7 +73,6 @@ class BookDaoImplTest {
 
     @DisplayName("create book")
     @Test
-    @Transactional
     void createBook() {
         Author author = new Author("Иванов Иван Иванович", "Иван2");
         Genre genre = new Genre("Любой жанр2");
@@ -84,9 +81,11 @@ class BookDaoImplTest {
         comments.add(comment);
 
         Book book = new Book("Новая книга2", author, genre, comments);
+        comment.setBook(book);
         long id = bookDao.save(book);
+        em.detach(book);
         Book book2=bookDao.read(id);
-        System.out.println(book2);
+        assertEquals(1,book2.getComments().size());
         assertSame(book2.getName(), "Новая книга2");
     }
 }

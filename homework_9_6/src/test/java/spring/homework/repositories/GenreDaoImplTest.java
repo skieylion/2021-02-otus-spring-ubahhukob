@@ -34,7 +34,6 @@ class GenreDaoImplTest {
 
     @DisplayName("update genre")
     @Test
-    @Transactional
     void updateGenre() {
         Genre genre = new Genre(4, "Проза");
 
@@ -44,7 +43,6 @@ class GenreDaoImplTest {
 
     @DisplayName("create genre")
     @Test
-    @Transactional
     void createGenre() {
         Genre genre = new Genre("Новый жанр");
         long id = genreDao.save(genre);
@@ -53,7 +51,6 @@ class GenreDaoImplTest {
 
     @DisplayName("delete genre")
     @Test
-    @Transactional
     void deleteGenre() {
         genreDao.delete(5);
         assertNull(genreDao.read(5));

@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    data: data-test.sql
+  schema: schema.sql
+
+  shell:
+    interactive:
+      enabled: false
+
+h2:
+  console:
+    path: /h2-console
+
+settings:
+  web-allow-others: true

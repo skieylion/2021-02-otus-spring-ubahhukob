@@ -26,7 +26,5 @@ hs_err_pid*
 .idea/
 *.iml
 
+.mvn/
 target/
-
-homework_5/
-homework_7/

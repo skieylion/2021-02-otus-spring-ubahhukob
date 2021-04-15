@@ -10,7 +10,6 @@ import spring.homework.domain.Book;
 import spring.homework.domain.Comment;
 import spring.homework.domain.Genre;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,7 @@ class BookDaoTest {
     @DisplayName("read book all")
     @Test
     void readBookAll() {
-        List<Book> books= Lists.newArrayList(bookDao.findAll().iterator());
+        List<Book> books= bookDao.findAll();
         //System.out.println(books);
         assertTrue(books.size() > 0);
     }

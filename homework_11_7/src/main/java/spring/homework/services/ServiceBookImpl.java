@@ -1,6 +1,5 @@
 package spring.homework.services;
 
-import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Author;
@@ -31,23 +30,24 @@ public class ServiceBookImpl implements ServiceBook{
     @Transactional(readOnly = true)
     @Override
     public String read(long id) {
-        return serviceStringBook.convert(bookDao.findById(id).get());
+        Book book=bookDao.findById(id).orElseThrow();
+        return serviceStringBook.convert(book);
     }
 
     @Transactional(readOnly = true)
     @Override
     public String readAll() {
-        List<Book> bookList=Lists.newArrayList(bookDao.findAll().iterator());
+        List<Book> bookList=bookDao.findAll();
         return serviceStringBook.convert(bookList);
     }
 
     @Override
     @Transactional
     public String update(long bookId, String newName) {
-        Book book=bookDao.findById(bookId).get();
+        Book book=bookDao.findById(bookId).orElseThrow();
         book.setName(newName);
         bookDao.save(book);
-        return serviceStringBook.convert(bookDao.findById(bookId).get());
+        return serviceStringBook.convert(bookDao.findById(bookId).orElseThrow());
     }
 
     @Override

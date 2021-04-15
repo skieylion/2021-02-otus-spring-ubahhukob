@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>spring.homework</groupId>
-	<artifactId>homework_9_6</artifactId>
+	<artifactId>homework_11_7</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>homework_9_6</name>
+	<name>homework_11_7</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
@@ -35,11 +35,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.collections</groupId>
-			<artifactId>google-collections</artifactId>
-			<version>1.0</version>
 		</dependency>
 
 		<dependency>

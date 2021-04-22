@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      port: 0
+      database: test
+  shell:
+    interactive:
+      enabled: false
+mongock:
+  runner-type: "ApplicationRunner" # default
+  #runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - spring.homework.changelogs

@@ -12,6 +12,7 @@ public class Comment {
     @Id
     private String id;
     private String description;
+    private Book book;
 
     public Comment(String id, String description) {
         this.id = id;

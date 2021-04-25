@@ -32,7 +32,7 @@ public class ComponentCommand {
     }
 
     @ShellMethod(value = "delete command",key={"delete book"})
-    public String deleteBook(@ShellOption String bookId){
+    public String deleteBook(@ShellOption String bookId) throws BookException {
         return serviceBook.delete(bookId);
     }
 

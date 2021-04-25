@@ -16,7 +16,7 @@ public class Book {
 
     private Author author;
     private Genre genre;
-    List<Comment> comments;
+    private List<Comment> comments;
 
     public Book(String id, String name, Author author, Genre genre, List<Comment> comments) {
         this.id = id;
@@ -31,7 +31,6 @@ public class Book {
         this.name = name;
         this.author = author;
         this.genre = genre;
-
     }
 
     public Book(String name, Author author, Genre genre, List<Comment> comments) {

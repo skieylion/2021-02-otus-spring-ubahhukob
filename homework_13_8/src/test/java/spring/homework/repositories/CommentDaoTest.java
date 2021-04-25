@@ -15,6 +15,7 @@ class CommentDaoTest extends AbstractTest {
 
     @Autowired
     private CommentDao commentDao;
+    @Autowired BookDao bookDao;
 
     @DisplayName("read comment")
     @Test
@@ -34,9 +35,13 @@ class CommentDaoTest extends AbstractTest {
     @DisplayName("create comment")
     @Test
     void createComment() {
+        Book book=bookDao.findById("2222cc3a3d6d754095f46023").get();
         Comment comment = new Comment("Так так");
+        comment.setBook(book);
         comment=commentDao.save(comment);
         assertEquals(commentDao.findById(comment.getId()).get().getDescription(),"Так так");
+        Comment comment2=commentDao.findById(comment.getId()).get();
+        assertEquals(comment2.getBook().getId(),"2222cc3a3d6d754095f46023");
     }
 
     @DisplayName("delete comment")

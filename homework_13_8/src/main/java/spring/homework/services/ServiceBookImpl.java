@@ -56,9 +56,11 @@ public class ServiceBookImpl implements ServiceBook{
 
     @Override
     @Transactional
-    public String delete(String bookId) {
-        bookDao.deleteById(bookId);
-        return "deleted the book";
+    public String delete(String bookId) throws BookException {
+        Book book=bookDao.findById(bookId).orElseThrow(BookException::new);
+        commentDao.deleteAll(book.getComments());
+        bookDao.deleteById(book.getId());
+        return "deleted the book with comments";
     }
 
     @Override

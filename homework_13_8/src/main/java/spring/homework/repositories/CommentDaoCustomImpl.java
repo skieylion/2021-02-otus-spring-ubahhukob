@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import spring.homework.domain.Book;
 import spring.homework.domain.Comment;
 
 @AllArgsConstructor
@@ -14,7 +15,9 @@ public class CommentDaoCustomImpl implements CommentDaoCustom{
 
     @Override
     public void deleteByBookId(String id) {
-        Query query=new Query(Criteria.where("book.$id").is(id));
+        Book book=new Book();
+        book.setId(id);
+        Query query=new Query(Criteria.where("book").is(book));
         mongoTemplate.findAllAndRemove(query, Comment.class);
     }
 }

@@ -3,6 +3,7 @@ package spring.homework.domain;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class Book {
 
     private Author author;
     private Genre genre;
+    @DBRef
     private List<Comment> comments;
 
     public Book(String id, String name, Author author, Genre genre, List<Comment> comments) {

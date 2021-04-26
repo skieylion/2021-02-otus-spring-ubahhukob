@@ -57,9 +57,8 @@ public class ServiceBookImpl implements ServiceBook{
     @Override
     @Transactional
     public String delete(String bookId) throws BookException {
-        Book book=bookDao.findById(bookId).orElseThrow(BookException::new);
-        commentDao.deleteAll(book.getComments());
-        bookDao.deleteById(book.getId());
+        commentDao.deleteByBookId(bookId);
+        bookDao.deleteById(bookId);
         return "deleted the book with comments";
     }
 
@@ -71,13 +70,18 @@ public class ServiceBookImpl implements ServiceBook{
         Comment comment=new Comment(commentValue);
         author.setId(authorDao.save(author).getId());
         genre.setId(genreDao.save(genre).getId());
+
         List<Comment> commentList=new ArrayList<>();
         commentList.add(comment);
-        commentDao.saveAll(commentList);
-        Book book=new Book(bookName,author,genre,commentList);
-        //comment.setBook(book);
+        comment=commentDao.save(comment);
 
-        String id=bookDao.save(book).getId();
+        Book book=new Book(bookName,author,genre,commentList);
+        book=bookDao.save(book);
+
+        comment.setBook(book);
+        commentDao.save(comment);
+
+        String id=book.getId();
         return serviceStringBook.convert(bookDao.findById(id).orElseThrow(BookException::new));
     }
 

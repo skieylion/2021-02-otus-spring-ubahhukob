@@ -60,10 +60,12 @@ class BookDaoTest extends AbstractTest {
     void createBook() {
         Author author = new Author("Иванов Иван Иванович", "Иван2");
         Genre genre = new Genre("Любой жанр2");
-        Comment comment = new Comment("Комментарий ...");
+        Comment comment = new Comment("60871ea591409c243cb65ad2","Комментарий ...");
         List<Comment> comments=new ArrayList<>();
         comments.add(comment);
+
         Book book = new Book("Новая книга2", author, genre, comments);
+        comment.setBook(book);
 
         book=bookDao.save(book);
 

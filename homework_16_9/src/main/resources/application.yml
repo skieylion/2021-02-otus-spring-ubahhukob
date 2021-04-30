@@ -1,0 +1,9 @@
+spring:
+  shell:
+    interactive:
+      enabled: false
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: BookStoreUI

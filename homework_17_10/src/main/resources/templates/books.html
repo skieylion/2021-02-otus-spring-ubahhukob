@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>books</title>
+    <!-- Подключаем metro ui -->
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4.3.2/css/metro-all.min.css">
+</head>
+<body>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <th>#</th>
+                <th>name</th>
+                <th>genre</th>
+                <th>author</th>
+            </thead>
+            <tbody>
+                <tr th:each="book,stateBook:${books}">
+                    <td th:text="${stateBook.index}" />
+                    <td th:text="${book.name}" />
+                    <td th:text="${book.author.fullName}" />
+                    <td th:text="${book.genre.name}" />
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
+</body>
+</html>

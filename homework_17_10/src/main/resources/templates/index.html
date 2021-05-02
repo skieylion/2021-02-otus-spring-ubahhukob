@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Web</title>
+    <!-- Подключаем metro ui -->
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4.3.2/css/metro-all.min.css">
+
+</head>
+<body>
+    <div class="pos-absolute w-100 h-100">
+        <div id="splitter_main" data-role="splitter" class="h-100 w-100" data-split-sizes="30, 70" data-save-state=true data-gutter-size="10">
+            <div class="d-flex flex-row-r w-100" >
+                <ul  data-tabs-position="vertical h-100" data-role="tabs" class="no-border">
+                    <li th:each="indexPage,statePage:${indexPageList}">
+                        <a th:href="'#target_'+@{${statePage.index}}" th:text="${indexPage.nameLink}" style="justify-content:right;" />
+                    </li>
+                </ul>
+            </div>
+            <div class="d-flex flex-justify-right flex-align-center">
+                <div class="bd-default no-border-top p-2 w-100 h-100" >
+                    <div th:each="indexPage,statePage:${indexPageList}" th:id="'target_'+${statePage.index}" class="w-100 h-100" >
+                        <iframe th:src="${indexPage.srcFrame}" class="h-100 w-100">your browser doesn't support iFrames =(</iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
+</body>
+</html>

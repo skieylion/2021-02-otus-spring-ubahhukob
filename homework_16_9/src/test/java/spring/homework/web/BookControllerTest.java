@@ -2,42 +2,33 @@ package spring.homework.web;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import spring.homework.controllers.BookController;
-import spring.homework.controllers.MainController;
 import spring.homework.domain.Author;
 import spring.homework.domain.Book;
 import spring.homework.domain.Genre;
-import spring.homework.repositories.BookDao;
 import spring.homework.services.ServiceBook;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.containsString;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
 @DisplayName("web crud")
-class BookWebTest {
+class BookControllerTest {
 
     //https://spring.io/guides/gs/testing-web/
 
@@ -56,7 +47,7 @@ class BookWebTest {
         .thenReturn(book);
 
         mvc
-        .perform(get("/api/find/3333cc3a3d6d754095f46023"))
+        .perform(get("/find/3333cc3a3d6d754095f46023"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("Книга")));
@@ -73,7 +64,7 @@ class BookWebTest {
         .thenReturn(books);
 
         mvc
-        .perform(get("/api/find"))
+        .perform(get("/find"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("Книга1")))
@@ -101,7 +92,7 @@ class BookWebTest {
         .update("3553cc3a3d6d754095f46023","Название2");
 
         mvc
-        .perform(get("/api/update/3553cc3a3d6d754095f46023?name=Название2"))
+        .perform(get("/update/3553cc3a3d6d754095f46023?name=Название2"))
         .andDo(print())
         .andExpect(status().is3xxRedirection());
     }
@@ -113,7 +104,7 @@ class BookWebTest {
         .thenReturn(true);
 
         mvc
-        .perform(get("/api/delete/4551cc3a3d6d754095f46023"))
+        .perform(post("/delete/4551cc3a3d6d754095f46023"))
         .andDo(print())
         .andExpect(status().isOk());
     }
@@ -127,7 +118,7 @@ class BookWebTest {
         .thenReturn("2233cc3a3d6d754095f46023");
 
         mvc
-        .perform(post("/api/create?name=Книга&author=Автор&genre=Жанр&comment=Коммент"))
+        .perform(post("/create?name=Книга&author=Автор&genre=Жанр&comment=Коммент"))
         .andDo(print())
         .andExpect(status().is3xxRedirection());
     }

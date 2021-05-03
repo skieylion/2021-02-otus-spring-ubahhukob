@@ -1,4 +1,4 @@
-package spring.homework.domain;
+package spring.homework.app;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

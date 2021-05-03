@@ -11,7 +11,7 @@
     <div class="pos-absolute w-100 h-100">
         <div id="splitter_main" data-role="splitter" class="h-100 w-100" data-split-sizes="30, 70" data-save-state=true data-gutter-size="10">
             <div class="d-flex flex-row-r w-100" >
-                <ul  data-tabs-position="vertical h-100" data-role="tabs" class="no-border">
+                <ul  data-tabs-position="vertical h-100" data-role="tabs" class="no-border" >
                     <li th:each="indexPage,statePage:${indexPageList}">
                         <a th:href="'#target_'+@{${statePage.index}}" th:text="${indexPage.nameLink}" style="justify-content:right;" />
                     </li>
@@ -28,4 +28,5 @@
     </div>
     <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
 </body>
+
 </html>

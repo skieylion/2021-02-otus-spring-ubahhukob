@@ -12,8 +12,8 @@
             <thead>
                 <th>#</th>
                 <th>name</th>
-                <th>genre</th>
                 <th>author</th>
+                <th>genre</th>
             </thead>
             <tbody>
                 <tr th:each="book,stateBook:${books}">
@@ -24,7 +24,9 @@
                 </tr>
             </tbody>
         </table>
+        <a th:if="${isFindAll==null}" href="javascript:history.back();">Go Back</a>
     </div>
     <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
+
 </body>
 </html>

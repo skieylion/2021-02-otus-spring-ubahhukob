@@ -1,5 +1,8 @@
 package spring.homework.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,8 +44,6 @@ import static org.hamcrest.Matchers.containsString;
 @DisplayName("web crud")
 class BookControllerTest {
 
-    //https://spring.io/guides/gs/testing-web/
-
     @Autowired
     private MockMvc mvc;
 
@@ -57,7 +59,7 @@ class BookControllerTest {
         .thenReturn(book);
 
         mvc
-        .perform(get("/api/find/3333cc3a3d6d754095f46023"))
+        .perform(get("/book/3333cc3a3d6d754095f46023"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("MyBook")));
@@ -74,7 +76,7 @@ class BookControllerTest {
         .thenReturn(books);
 
         mvc
-        .perform(get("/api/find"))
+        .perform(get("/book"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("Book1")))
@@ -91,6 +93,7 @@ class BookControllerTest {
         .doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
+
                 String id=invocation.getArgument(0);
                 String name=invocation.getArgument(1);
                 book.setId(id);
@@ -101,8 +104,13 @@ class BookControllerTest {
         .when(serviceBook)
         .update("3553cc3a3d6d754095f46023","Name2");
 
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson=ow.writeValueAsString(book);
+
         mvc
-        .perform(put("/api/update/3553cc3a3d6d754095f46023?name=Name2"))
+        .perform(put("/book").content(requestJson).contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().is2xxSuccessful());
     }
@@ -122,7 +130,7 @@ class BookControllerTest {
 
 
         mvc
-        .perform(delete("/api/delete/4551cc3a3d6d754095f46023"))
+        .perform(delete("/book/4551cc3a3d6d754095f46023"))
         .andDo(print())
         .andExpect(status().isOk());
     }
@@ -130,14 +138,19 @@ class BookControllerTest {
     @DisplayName("create book")
     @Test
     void createBook() throws Exception {
-        /*Book book=new Book("Книга",new Author("Автор",""),new Genre("Жанр"),new ArrayList<>());
+        Book book=new Book("Книга",new Author("Автор",""),new Genre("Жанр"),new ArrayList<>());
 
-        when(serviceBook.create("Книга","Автор","Жанр","Коммент"))
+        when(serviceBook.create(book))
         .thenReturn("2233cc3a3d6d754095f46023");
 
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson=ow.writeValueAsString(book);
+
         mvc
-        .perform(post("/api/create?name=Книга&author=Автор&genre=Жанр&comment=Коммент"))
+        .perform(post("/book").content(requestJson).contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
-        .andExpect(status().is2xxSuccessful());*/
+        .andExpect(status().is2xxSuccessful());
     }
 }

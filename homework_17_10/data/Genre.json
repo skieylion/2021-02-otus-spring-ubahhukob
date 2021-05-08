@@ -1,0 +1,95 @@
+[{
+  "_id": {
+    "$oid": "607f366d43df1e0055ea0670"
+  },
+  "name": "Роман"
+},{
+  "_id": {
+    "$oid": "607f36c727255018c8360e9a"
+  },
+  "name": "Поэма"
+},{
+  "_id": {
+    "$oid": "60886d58fa34cf1784d219f6"
+  },
+  "name": "asdasd",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608870456c219458f47d2589"
+  },
+  "name": "rrr",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608b02b72a6b27207466c497"
+  },
+  "name": "sssssssssss",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608b03b43c9154238acca82c"
+  },
+  "name": "newgenre",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608c45f11453b310a34bba4e"
+  },
+  "name": "aaa",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608dc016b8346f55f7cfc02e"
+  },
+  "name": "gfgh",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608dc05150b4650752b332e0"
+  },
+  "name": "sdfg",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608dc2715e54a65183b54ced"
+  },
+  "name": "ghjghjgh",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608ebb225f01e65e48679cb6"
+  },
+  "name": "dffggggg",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "608ebb315f01e65e48679cba"
+  },
+  "name": "dffggggg444444444",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "60906d6353decb75f8e5a6d0"
+  },
+  "name": "sdfgsdfgsdf",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "6096de846a6a8a08812102bc"
+  },
+  "name": "sdfgsdfg",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "6096de8c6a6a8a08812102c0"
+  },
+  "name": "sdfgsdfg",
+  "_class": "spring.homework.domain.Genre"
+},{
+  "_id": {
+    "$oid": "6096dfd5825cd058ae3962c0"
+  },
+  "name": "ааа",
+  "_class": "spring.homework.domain.Genre"
+}]

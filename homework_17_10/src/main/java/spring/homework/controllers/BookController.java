@@ -20,29 +20,28 @@ public class BookController {
 
     private final ServiceBook serviceBook;
 
-    @GetMapping("/api/find/{id}")
+    @GetMapping("/book/{id}")
     public Book find(@PathVariable("id") String id) throws BookException {
         return serviceBook.read(id);
     }
 
-    @GetMapping("/api/find")
+    @GetMapping("/book")
     public List<Book> findAll() throws BookException {
         return serviceBook.readAll();
     }
 
-    @DeleteMapping("/api/delete/{id}")
+    @DeleteMapping("/book/{id}")
     public void delete(@PathVariable("id") String id) {
         serviceBook.delete(id);
     }
 
-    @PutMapping("/api/update/{id}")
-    public void update(@PathVariable("id") String id,@PathParam("name") String name) throws BookException {
-        serviceBook.update(id,name);
+    @PutMapping("/book")
+    public void update(@RequestBody Book book) throws BookException {
+        serviceBook.update(book.getId(),book.getName());
     }
 
-    @PostMapping("/api/create")
-    public String create(@PathParam("name") String name,@PathParam("author") String author, @PathParam("genre") String genre,@PathParam("comment") String comment) throws BookException {
-        String id = serviceBook.create(name,author,genre,comment);
-        return id;
+    @PostMapping("/book")
+    public String create(@RequestBody Book book) throws BookException {
+        return serviceBook.create(book);
     }
 }

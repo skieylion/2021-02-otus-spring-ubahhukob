@@ -21,7 +21,7 @@
     <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
     <script src="/table"></script>
     <script>
-        axios.get("/api/find")
+        axios.get("/book")
         .then((response) => {
             viewListBook(response.data);
         });

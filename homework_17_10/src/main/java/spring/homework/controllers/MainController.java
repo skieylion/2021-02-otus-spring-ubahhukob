@@ -1,16 +1,12 @@
 package spring.homework.controllers;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import spring.homework.domain.IndexPage;
+import spring.homework.app.IndexPage;
 
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class MainController {

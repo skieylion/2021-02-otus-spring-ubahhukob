@@ -31,7 +31,7 @@
 <script>
     function setAction(){
         let formData = new FormData(myForm);
-        axios.get("/api/find/"+formData.get("id"))
+        axios.get("/book/"+formData.get("id"))
         .then((response) => {
             viewBook(response.data);
         });

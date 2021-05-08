@@ -10,5 +10,5 @@ public interface ServiceBook {
     List<Book> readAll();
     void update(String bookId, String newName) throws BookException;
     void delete(String bookId);
-    String create(String bookName,String authorName,String genreName,String commentValue) throws BookException;
+    String create(Book book) throws BookException;
 }

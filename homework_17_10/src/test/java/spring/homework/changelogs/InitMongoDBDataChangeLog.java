@@ -16,6 +16,7 @@ import spring.homework.repositories.GenreDao;
 import java.util.ArrayList;
 import java.util.List;
 
+//перенести в тест
 @ChangeLog(order = "001")
 public class InitMongoDBDataChangeLog {
 

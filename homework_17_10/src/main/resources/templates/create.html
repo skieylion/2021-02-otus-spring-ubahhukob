@@ -49,9 +49,19 @@
 <script>
     function setAction(){
         let formData = new FormData(myForm);
-        axios.post("/api/create?name="+formData.get("name")+"&author="+formData.get("author")+"&genre="+formData.get("genre")+"&comment="+formData.get("comment"))
-        .then((response) => {
-            axios.get("/api/find/"+response.data)
+        axios.post("/book",{
+            name:formData.get("name"),
+            author:{
+                fullName:formData.get("author")
+            },
+            genre:{
+                name:formData.get("genre")
+            },
+            comments:[{
+                    description:formData.get("comment")
+            }]
+        }).then((response) => {
+            axios.get("/book/"+response.data)
             .then((response2) => {
                 viewBook(response2.data);
             });

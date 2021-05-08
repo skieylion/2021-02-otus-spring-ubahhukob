@@ -14,6 +14,7 @@ Vue.component("table-component",{
              '>'+
                  '<thead>'+
                      '<tr>'+
+                         '<th>Id</th>'+
                          '<th>Book</th>'+
                          '<th>Author</th>'+
                          '<th>Genre</th>'+
@@ -28,7 +29,7 @@ new Vue({
 
 function viewBook(data){
     var rows = [
-        [data.name, data.author.fullName,data.genre.name],
+        [data.id,data.name, data.author.fullName,data.genre.name],
     ];
     resetBook(rows);
 }
@@ -37,7 +38,7 @@ function viewListBook(data){
     console.log("list:",data);
     var rows = [];
     data.forEach(function(item,index){
-        rows.push([item.name, item.author.fullName,item.genre.name]);
+        rows.push([item.id,item.name, item.author.fullName,item.genre.name]);
     });
     resetBook(rows);
 }

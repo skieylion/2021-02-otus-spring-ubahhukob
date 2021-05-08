@@ -9,7 +9,6 @@ import java.util.List;
 
 @Controller
 public class MainController {
-
     @GetMapping("/")
     public String index(){
         return "index";
@@ -17,5 +16,9 @@ public class MainController {
     @GetMapping("/table")
     public String table(){
         return "table.js";
+    }
+    @GetMapping("/actions")
+    public String actions(){
+        return "actions.js";
     }
 }

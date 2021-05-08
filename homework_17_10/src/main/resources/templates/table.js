@@ -35,7 +35,6 @@ function viewBook(data){
 }
 
 function viewListBook(data){
-    console.log("list:",data);
     var rows = [];
     data.forEach(function(item,index){
         rows.push([item.id,item.name, item.author.fullName,item.genre.name]);

@@ -15,3 +15,6 @@
 | 5 | DAO на Spring JDBC | homework_7 |
 | 6 | JPQL, Spring ORM, DAO на основе Spring ORM + JPA | homework_9_6 |
 | 7 | "Белая магия" Spring Data: Spring Data JPA | homework_11_7 |
+| 8 | Spring Data для подключения к нереляционным БД | homework_13_8 |
+| 9 | Spring MVC View | homework_16_9 |
+| 10 | Современные приложения на Spring MVC | homework_17_10 |

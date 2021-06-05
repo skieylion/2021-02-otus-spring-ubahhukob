@@ -1,0 +1,122 @@
+[{
+  "_id": {
+    "$oid": "6096de846a6a8a08812102bd"
+  },
+  "name": "sdfgsdfgsdfg",
+  "author": {
+    "_id": {
+      "$oid": "6096de846a6a8a08812102bb"
+    },
+    "fullName": "sd fgsdf g",
+    "alias": ""
+  },
+  "genre": {
+    "_id": {
+      "$oid": "6096de846a6a8a08812102bc"
+    },
+    "name": "sdfgsdfg"
+  },
+  "comments": [
+    {
+      "$ref": "Comment",
+      "$id": {
+        "$oid": "6096de846a6a8a08812102ba"
+      }
+    }
+  ],
+  "_class": "spring.homework.domain.Book"
+},{
+  "_id": {
+    "$oid": "6096de8c6a6a8a08812102c1"
+  },
+  "name": "sdfgsdfgsdfg",
+  "author": {
+    "_id": {
+      "$oid": "6096de8c6a6a8a08812102bf"
+    },
+    "fullName": "sd fgsdf g",
+    "alias": ""
+  },
+  "genre": {
+    "_id": {
+      "$oid": "6096de8c6a6a8a08812102c0"
+    },
+    "name": "sdfgsdfg"
+  },
+  "comments": [
+    {
+      "$ref": "Comment",
+      "$id": {
+        "$oid": "6096de8c6a6a8a08812102be"
+      }
+    }
+  ],
+  "_class": "spring.homework.domain.Book"
+},{
+  "_id": {
+    "$oid": "6096dfd5825cd058ae3962c1"
+  },
+  "name": "ыыыы",
+  "author": {
+    "_id": {
+      "$oid": "6096dfd5825cd058ae3962bf"
+    },
+    "fullName": "ввв",
+    "alias": ""
+  },
+  "genre": {
+    "_id": {
+      "$oid": "6096dfd5825cd058ae3962c0"
+    },
+    "name": "ааа"
+  },
+  "comments": [
+    {
+      "$ref": "Comment",
+      "$id": {
+        "$oid": "6096dfd5825cd058ae3962be"
+      }
+    }
+  ],
+  "_class": "spring.homework.domain.Book"
+},{
+  "_id": {
+    "$oid": "6096e14986979a102772b916"
+  },
+  "name": "fddf",
+  "author": {
+    "fullName": "dfg"
+  },
+  "genre": {
+    "name": "dfg"
+  },
+  "comments": [
+    {
+      "$ref": "Comment",
+      "$id": {
+        "$oid": "6096e14986979a102772b915"
+      }
+    }
+  ],
+  "_class": "spring.homework.domain.Book"
+},{
+  "_id": {
+    "$oid": "6096ea5edd333e18e5e7beca"
+  },
+  "name": "ss",
+  "author": {
+    "fullName": "aa"
+  },
+  "genre": {
+    "name": "ff"
+  },
+  "comments": [
+    {
+      "$ref": "Comment",
+      "$id": {
+        "$oid": "6096ea5edd333e18e5e7bec9"
+      }
+    }
+  ],
+  "_class": "spring.homework.domain.Book"
+}]

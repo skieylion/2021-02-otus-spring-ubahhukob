@@ -13,20 +13,9 @@ public class MainController {
     public String login(){
         return "redirect:/login";
     }
+
     @GetMapping("/index")
     public String index(){
         return "index";
-    }
-    @GetMapping("/table.js")
-    public String table(){
-        return "table.js";
-    }
-    @GetMapping("/actions.js")
-    public String actions(){
-        return "actions.js";
-    }
-    @GetMapping("/axios.js")
-    public String axios(){
-        return "axios.js";
     }
 }

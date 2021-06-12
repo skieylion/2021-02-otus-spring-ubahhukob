@@ -17,8 +17,12 @@ public class ServiceUserDetailsImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String s) {
-        User user=userDao.findByLogin(s);
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        Boolean isExist=userDao.existsByLogin(login);
+        if(!isExist) {
+            throw new UsernameNotFoundException("User isn't exist");
+        }
+        User user=userDao.findByLogin(login);
         return SecurityUser.fromUser(user);
     }
 }

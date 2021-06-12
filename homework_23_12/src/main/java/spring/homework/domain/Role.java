@@ -1,28 +1,28 @@
 package spring.homework.domain;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public enum Role {
-    ADMIN(Set.of(Permission.WRITE,Permission.READ)),
-    USER(Set.of(Permission.READ));
+@NoArgsConstructor
+public class Role {
 
-    private final Set<Permission> permissions;
+    private String name;
+    private List<String> permissions;
 
-    Role(Set<Permission> permissions) {
-        this.permissions=permissions;
-    }
-
-    public Set<Permission> getPermissions() {
+    public List<String> getPermissions() {
         return permissions;
     }
 
     public Set<SimpleGrantedAuthority> getAuthorities(){
         return  getPermissions()
                 .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .map(permission -> new SimpleGrantedAuthority(permission))
                 .collect(Collectors.toSet());
     }
 }

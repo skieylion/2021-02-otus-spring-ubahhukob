@@ -24,9 +24,9 @@ import spring.homework.services.ServiceUserDetailsImpl;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final ServiceUserDetailsImpl serviceUserDetails;
+    private final UserDetailsService serviceUserDetails;
 
-    public SecurityConfig(ServiceUserDetailsImpl serviceUserDetails) {
+    public SecurityConfig(UserDetailsService serviceUserDetails) {
         this.serviceUserDetails = serviceUserDetails;
     }
 
@@ -41,10 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.GET,"/book/*").hasAuthority(Permission.READ.getPermission())
-                .antMatchers(HttpMethod.DELETE,"/book/*").hasAuthority(Permission.WRITE.getPermission())
-                .antMatchers(HttpMethod.PUT,"/book").hasAuthority(Permission.WRITE.getPermission())
-                .antMatchers(HttpMethod.POST,"/book").hasAuthority(Permission.WRITE.getPermission())
+                .antMatchers(HttpMethod.GET,"/book/*").hasAuthority(Permission.READ.get())
+                .antMatchers(HttpMethod.DELETE,"/book/*").hasAuthority(Permission.WRITE.get())
+                .antMatchers(HttpMethod.PUT,"/book").hasAuthority(Permission.WRITE.get())
+                .antMatchers(HttpMethod.POST,"/book").hasAuthority(Permission.WRITE.get())
                 .anyRequest()
                 .authenticated()
                 .and()

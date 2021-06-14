@@ -9,15 +9,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Data
 @NoArgsConstructor
 public class Role {
 
     private String name;
     private List<String> permissions;
-
-    public List<String> getPermissions() {
-        return permissions;
-    }
 
     public Set<SimpleGrantedAuthority> getAuthorities(){
         return  getPermissions()

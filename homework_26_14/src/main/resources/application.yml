@@ -1,8 +1,9 @@
 spring:
+  batch:
+    job:
+      enabled: true
   data:
     mongodb:
-      host: localhost
-      port: 27017
       database: BookStoreUI
   datasource:
     url: jdbc:h2:mem:testdb
@@ -20,3 +21,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+mongock:
+  #runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - spring.homework.config

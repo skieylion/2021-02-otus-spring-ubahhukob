@@ -1,9 +1,10 @@
 package spring.homework.repositories;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.CrudRepository;
 import spring.homework.domain.Author;
 
-public interface AuthorDao extends MongoRepository<Author,String> {
+import java.util.List;
 
+public interface AuthorDao extends MongoRepository<Author,String> {
+    List<Author> findByFullName(String fullName);
 }

@@ -25,4 +25,4 @@ mongock:
   #runner-type: "ApplicationRunner" # default
   runner-type: "InitializingBean"
   change-logs-scan-package:
-    - spring.homework.config
+    - spring.homework.changelogs

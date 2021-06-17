@@ -39,7 +39,7 @@ public class MongoToH2Test {
         Job job = jobLauncherTestUtils.getJob();
         assertThat(job).isNotNull()
                 .extracting(Job::getName)
-                .isEqualTo("importUserJob");
+                .isEqualTo("importBookJob");
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
         Assertions.assertTrue(bookDaoH2.findAll().size()>0);

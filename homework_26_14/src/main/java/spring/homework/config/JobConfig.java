@@ -1,35 +1,35 @@
 package spring.homework.config;
 
-import org.hibernate.Hibernate;
+import com.github.cloudyrock.spring.v5.EnableMongock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.tasklet.MethodInvokingTaskletAdapter;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.data.MongoItemReader;
 import org.springframework.batch.item.data.builder.MongoItemReaderBuilder;
-import org.springframework.batch.item.database.HibernateItemWriter;
 import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
+import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.lang.NonNull;
+import spring.homework.domain.Author;
 import spring.homework.domain.Book;
+import spring.homework.domain.Genre;
+import spring.homework.h2.domain.AuthorH2;
+import spring.homework.h2.domain.BookH2;
+import spring.homework.h2.domain.GenreH2;
 import spring.homework.repositories.BookDao;
-import spring.homework.services.CleanUpService;
-import spring.homework.services.HandleService;
+import spring.homework.services.HandlerAuthorService;
+import spring.homework.services.HandlerBookService;
+import spring.homework.services.HandlerGenreService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,20 +37,19 @@ import java.util.HashMap;
 import java.util.List;
 
 @Configuration
+@EnableMongock
 public class JobConfig {
 
     private static final int CHUNK_SIZE = 5;
 
     private final Logger logger = LoggerFactory.getLogger("Batch");
 
-    public static final String IMPORT_USER_JOB_NAME = "importUserJob";
+    public static final String IMPORT_USER_JOB_NAME = "importBookJob";
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
-    @Autowired
-    private CleanUpService cleanUpService;
 
     @PersistenceContext
     private EntityManager em;
@@ -60,31 +59,12 @@ public class JobConfig {
     private  BookDao bookDao;
 
 
-    @StepScope
     @Bean
-    public MongoItemReader<Book> reader(MongoTemplate template) throws Exception {
-        return new MongoItemReaderBuilder<Book>()
-                .name("mongoItemReader")
-                .template(template)
-                .jsonQuery("{}")
-                .targetType(Book.class)
-                .sorts(new HashMap<>())
-                .build();
-    }
-
-    @Bean
-    public JpaItemWriter<spring.homework.h2.domain.Book> writer() {
-        JpaItemWriter writer=new JpaItemWriter<spring.homework.h2.domain.Book>();
-        writer.setEntityManagerFactory(em.getEntityManagerFactory());
-        return writer;
-    }
-
-    @Bean
-    public Job importUserJob(Step transformPersonsStep, Step cleanUpStep) {
+    public Job importBookJob(Step transformBookStep,Step transformGenreStep,Step transformAuthorStep) {
         return jobBuilderFactory.get(IMPORT_USER_JOB_NAME)
-                //.incrementer(new RunIdIncrementer())
-                .flow(transformPersonsStep)
-                .next(cleanUpStep)
+                .flow(transformGenreStep)
+                .next(transformAuthorStep)
+                .next(transformBookStep)
                 .end()
                 .listener(new JobExecutionListener() {
                     @Override
@@ -100,13 +80,36 @@ public class JobConfig {
                 .build();
     }
 
+    //BOOK---------------------------------
+    @StepScope
     @Bean
-    public Step transformPersonsStep(MongoItemReader<Book> reader, JpaItemWriter<spring.homework.h2.domain.Book> writer,
-                                     ItemProcessor<Book, spring.homework.h2.domain.Book> itemProcessor) {
-        return stepBuilderFactory.get("step1")
-                .<Book, spring.homework.h2.domain.Book>chunk(CHUNK_SIZE)
+    public MongoItemReader<Book> reader(MongoTemplate template) throws Exception {
+        return new MongoItemReaderBuilder<Book>()
+                .name("mongoItemReader")
+                .template(template)
+                .jsonQuery("{}")
+                .targetType(Book.class)
+                .sorts(new HashMap<>())
+                .build();
+    }
+
+    @Bean
+    public JpaItemWriter<BookH2> writer() {
+        return new JpaItemWriterBuilder<BookH2>()
+                .entityManagerFactory(em.getEntityManagerFactory())
+                .build();
+    }
+
+
+    @Bean
+    public Step transformBookStep(
+            MongoItemReader<Book> reader,
+            JpaItemWriter<BookH2> writer,
+            @Qualifier("bookProcessor") ItemProcessor<Book, BookH2> bookProcessor) {
+        return stepBuilderFactory.get("transformBookStep")
+                .<Book, BookH2>chunk(CHUNK_SIZE)
                 .reader(reader)
-                .processor(itemProcessor)
+                .processor(bookProcessor)
                 .writer(writer)
                 .listener(new ItemReadListener<>() {
                     public void beforeRead() {
@@ -141,7 +144,7 @@ public class JobConfig {
                     }
 
                     @Override
-                    public void afterProcess(Book book, spring.homework.h2.domain.Book book2) {
+                    public void afterProcess(Book book, BookH2 bookH22) {
                         logger.info("Конец обработки");
                     }
 
@@ -163,31 +166,96 @@ public class JobConfig {
                         logger.info("Ошибка пачки");
                     }
                 })
-//                .taskExecutor(new SimpleAsyncTaskExecutor())
+                //.taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
     @StepScope
-    @Bean
-    public ItemProcessor<Book, spring.homework.h2.domain.Book> processor(HandleService handleService) {
-        System.out.println("Item Processor");
-        return handleService::doHandleService;
+    @Bean("bookProcessor")
+    public ItemProcessor<Book, BookH2> bookProcessor(HandlerBookService handlerBookService) {
+        return handlerBookService::handle;
     }
 
+
+    //GENRE-------------------------------------
+    @StepScope
     @Bean
-    public Step cleanUpStep() {
-        return this.stepBuilderFactory.get("cleanUpStep")
-                .tasklet(cleanUpTasklet())
+    public MongoItemReader<Genre> readerGenre(MongoTemplate template) throws Exception {
+        return new MongoItemReaderBuilder<Genre>()
+                .name("mongoItemReaderGenre")
+                .template(template)
+                .jsonQuery("{}")
+                .targetType(Genre.class)
+                .sorts(new HashMap<>())
                 .build();
     }
 
     @Bean
-    public MethodInvokingTaskletAdapter cleanUpTasklet() {
-        MethodInvokingTaskletAdapter adapter = new MethodInvokingTaskletAdapter();
-
-        adapter.setTargetObject(cleanUpService);
-        adapter.setTargetMethod("cleanUp");
-
-        return adapter;
+    public JpaItemWriter<GenreH2> writerGenre() {
+        return new JpaItemWriterBuilder<GenreH2>()
+                .entityManagerFactory(em.getEntityManagerFactory())
+                .build();
     }
+
+    @StepScope
+    @Bean("genreProcessor")
+    public ItemProcessor<Genre, GenreH2> genreProcessor(HandlerGenreService handlerGenreService) {
+        return handlerGenreService::handle;
+    }
+
+    @Bean
+    public Step transformGenreStep(
+            MongoItemReader<Genre> readerGenre,
+            JpaItemWriter<GenreH2> writerGenre,
+            @Qualifier("genreProcessor") ItemProcessor<Genre,GenreH2> genreProcessor) {
+        return stepBuilderFactory.get("transformGenreStep")
+                .<Genre, GenreH2>chunk(CHUNK_SIZE)
+                .reader(readerGenre)
+                .processor(genreProcessor)
+                .writer(writerGenre)
+                //.taskExecutor(new SimpleAsyncTaskExecutor())
+                .build();
+    }
+
+    //AUTHOR------------------------
+    @StepScope
+    @Bean
+    public MongoItemReader<Author> readerAuthor(MongoTemplate template) throws Exception {
+        return new MongoItemReaderBuilder<Author>()
+                .name("mongoItemReaderAuthor")
+                .template(template)
+                .jsonQuery("{}")
+                .targetType(Author.class)
+                .sorts(new HashMap<>())
+                .build();
+    }
+
+    @Bean
+    public JpaItemWriter<AuthorH2> writerAuthor() {
+        return new JpaItemWriterBuilder<AuthorH2>()
+                .entityManagerFactory(em.getEntityManagerFactory())
+                .build();
+    }
+
+    @StepScope
+    @Bean("authorProcessor")
+    public ItemProcessor<Author, AuthorH2> authorProcessor(HandlerAuthorService handlerAuthorService) {
+        return handlerAuthorService::handle;
+    }
+
+    @Bean
+    public Step transformAuthorStep(
+            MongoItemReader<Author> readerAuthor,
+            JpaItemWriter<AuthorH2> writerAuthor,
+            @Qualifier("authorProcessor") ItemProcessor<Author,AuthorH2> authorProcessor) {
+        return stepBuilderFactory.get("transformAuthorStep")
+                .<Author, AuthorH2>chunk(CHUNK_SIZE)
+                .reader(readerAuthor)
+                .processor(authorProcessor)
+                .writer(writerAuthor)
+                //.taskExecutor(new SimpleAsyncTaskExecutor())
+                .build();
+    }
+
+
 }

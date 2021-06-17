@@ -1,36 +1,34 @@
 package spring.homework.h2.domain;
 
-import spring.homework.h2.domain.Book;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "COMMENT")
-public class Comment {
+public class CommentH2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(targetEntity = Book.class,fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = BookH2.class,fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
-    private Book book;
+    private BookH2 bookH2;
 
 
-    public Comment() {
+    public CommentH2() {
     }
 
-    public Comment(long id, String description) {
+    public CommentH2(long id, String description) {
         this.id = id;
         this.description = description;
     }
 
-    public Comment(long id) {
+    public CommentH2(long id) {
         this.id = id;
     }
 
-    public Comment(String description) {
+    public CommentH2(String description) {
         this.description = description;
     }
 
@@ -50,12 +48,12 @@ public class Comment {
         this.description = description;
     }
 
-    public Book getBook() {
-        return book;
+    public BookH2 getBook() {
+        return bookH2;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    public void setBook(BookH2 bookH2) {
+        this.bookH2 = bookH2;
     }
 
     @Override
@@ -63,7 +61,7 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", book=" + book +
+                ", book=" + bookH2 +
                 '}';
     }
 }

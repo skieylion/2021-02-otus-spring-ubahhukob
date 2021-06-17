@@ -4,22 +4,22 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "GENRE")
-public class Genre {
+public class GenreH2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "name")
     private String name;
 
-    public Genre() {
+    public GenreH2() {
     }
 
-    public Genre(long id, String name) {
+    public GenreH2(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Genre(String genreName) {
+    public GenreH2(String genreName) {
         this.name = genreName;
     }
 
@@ -31,7 +31,7 @@ public class Genre {
         return id;
     }
 
-    public Genre(long id) {
+    public GenreH2(long id) {
         this.id = id;
     }
 

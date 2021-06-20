@@ -10,6 +10,7 @@ import org.springframework.batch.test.JobRepositoryTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import spring.homework.h2.repositories.BookRepositoryH2;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -24,7 +25,7 @@ public class MongoToH2Test {
     private JobRepositoryTestUtils jobRepositoryTestUtils;
 
     @Autowired
-    private spring.homework.h2.repositories.BookDao bookDaoH2;
+    private BookRepositoryH2 bookRepositoryH2;
 
     @BeforeEach
     void clearMetaData() {
@@ -34,7 +35,7 @@ public class MongoToH2Test {
     @Test
     void testJob() throws Exception {
 
-        Assertions.assertEquals(bookDaoH2.findAll().size(),0);
+        Assertions.assertEquals(bookRepositoryH2.findAll().size(),0);
 
         Job job = jobLauncherTestUtils.getJob();
         assertThat(job).isNotNull()
@@ -42,6 +43,6 @@ public class MongoToH2Test {
                 .isEqualTo("importBookJob");
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
-        Assertions.assertTrue(bookDaoH2.findAll().size()>0);
+        Assertions.assertTrue(bookRepositoryH2.findAll().size()>0);
     }
 }

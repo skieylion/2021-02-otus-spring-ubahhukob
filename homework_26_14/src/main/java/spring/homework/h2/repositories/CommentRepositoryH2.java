@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import spring.homework.h2.domain.CommentH2;
 
 @Repository("commentDaoH2")
-public interface CommentDao extends CrudRepository<CommentH2,Long> {
+public interface CommentRepositoryH2 extends CrudRepository<CommentH2,Long> {
 }

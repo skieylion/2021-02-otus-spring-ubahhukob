@@ -5,6 +5,6 @@ import spring.homework.domain.Book;
 
 import java.util.List;
 
-public interface BookDao extends MongoRepository<Book,String> {
+public interface BookRepository extends MongoRepository<Book,String> {
     List<Book> findAll();
 }

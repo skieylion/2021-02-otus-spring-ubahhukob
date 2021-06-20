@@ -8,7 +8,7 @@ import spring.homework.h2.domain.BookH2;
 import java.util.List;
 
 @Repository("bookDaoH2")
-public interface BookDao extends CrudRepository<BookH2,Long> {
+public interface BookRepositoryH2 extends CrudRepository<BookH2,Long> {
     @EntityGraph(attributePaths = {"authorH2","genreH2"})
     List<BookH2> findAll();
 }

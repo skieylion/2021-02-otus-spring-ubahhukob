@@ -6,6 +6,6 @@ import spring.homework.domain.Genre;
 
 import java.util.List;
 
-public interface GenreDao extends MongoRepository<Genre,String> {
+public interface GenreRepository extends MongoRepository<Genre,String> {
 
 }

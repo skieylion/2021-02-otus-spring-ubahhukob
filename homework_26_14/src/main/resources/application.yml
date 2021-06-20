@@ -4,6 +4,7 @@ spring:
       enabled: true
   data:
     mongodb:
+      port: 0
       database: BookStoreUI
   datasource:
     url: jdbc:h2:mem:testdb

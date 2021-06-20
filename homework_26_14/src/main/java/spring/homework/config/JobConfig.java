@@ -26,7 +26,6 @@ import spring.homework.domain.Genre;
 import spring.homework.h2.domain.AuthorH2;
 import spring.homework.h2.domain.BookH2;
 import spring.homework.h2.domain.GenreH2;
-import spring.homework.repositories.BookDao;
 import spring.homework.services.HandlerAuthorService;
 import spring.homework.services.HandlerBookService;
 import spring.homework.services.HandlerGenreService;
@@ -44,7 +43,7 @@ public class JobConfig {
 
     private final Logger logger = LoggerFactory.getLogger("Batch");
 
-    public static final String IMPORT_USER_JOB_NAME = "importBookJob";
+    public static final String IMPORT_BOOK_JOB_NAME = "importBookJob";
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -55,13 +54,12 @@ public class JobConfig {
     private EntityManager em;
 
 
-    @Autowired
-    private  BookDao bookDao;
+
 
 
     @Bean
     public Job importBookJob(Step transformBookStep,Step transformGenreStep,Step transformAuthorStep) {
-        return jobBuilderFactory.get(IMPORT_USER_JOB_NAME)
+        return jobBuilderFactory.get(IMPORT_BOOK_JOB_NAME)
                 .flow(transformGenreStep)
                 .next(transformAuthorStep)
                 .next(transformBookStep)
@@ -81,7 +79,6 @@ public class JobConfig {
     }
 
     //BOOK---------------------------------
-    @StepScope
     @Bean
     public MongoItemReader<Book> reader(MongoTemplate template) throws Exception {
         return new MongoItemReaderBuilder<Book>()
@@ -166,11 +163,10 @@ public class JobConfig {
                         logger.info("Ошибка пачки");
                     }
                 })
-                //.taskExecutor(new SimpleAsyncTaskExecutor())
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
-    @StepScope
     @Bean("bookProcessor")
     public ItemProcessor<Book, BookH2> bookProcessor(HandlerBookService handlerBookService) {
         return handlerBookService::handle;
@@ -178,7 +174,6 @@ public class JobConfig {
 
 
     //GENRE-------------------------------------
-    @StepScope
     @Bean
     public MongoItemReader<Genre> readerGenre(MongoTemplate template) throws Exception {
         return new MongoItemReaderBuilder<Genre>()
@@ -197,7 +192,6 @@ public class JobConfig {
                 .build();
     }
 
-    @StepScope
     @Bean("genreProcessor")
     public ItemProcessor<Genre, GenreH2> genreProcessor(HandlerGenreService handlerGenreService) {
         return handlerGenreService::handle;
@@ -213,12 +207,11 @@ public class JobConfig {
                 .reader(readerGenre)
                 .processor(genreProcessor)
                 .writer(writerGenre)
-                //.taskExecutor(new SimpleAsyncTaskExecutor())
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 
     //AUTHOR------------------------
-    @StepScope
     @Bean
     public MongoItemReader<Author> readerAuthor(MongoTemplate template) throws Exception {
         return new MongoItemReaderBuilder<Author>()
@@ -237,7 +230,6 @@ public class JobConfig {
                 .build();
     }
 
-    @StepScope
     @Bean("authorProcessor")
     public ItemProcessor<Author, AuthorH2> authorProcessor(HandlerAuthorService handlerAuthorService) {
         return handlerAuthorService::handle;
@@ -253,7 +245,7 @@ public class JobConfig {
                 .reader(readerAuthor)
                 .processor(authorProcessor)
                 .writer(writerAuthor)
-                //.taskExecutor(new SimpleAsyncTaskExecutor())
+                .taskExecutor(new SimpleAsyncTaskExecutor())
                 .build();
     }
 

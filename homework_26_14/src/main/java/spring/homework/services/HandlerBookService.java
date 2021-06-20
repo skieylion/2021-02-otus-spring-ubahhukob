@@ -1,36 +1,32 @@
 package spring.homework.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import spring.homework.domain.Book;
-import spring.homework.domain.Genre;
 import spring.homework.h2.domain.AuthorH2;
 import spring.homework.h2.domain.BookH2;
 import spring.homework.h2.domain.GenreH2;
-import spring.homework.h2.repositories.AuthorDao;
-import spring.homework.h2.repositories.GenreDao;
+import spring.homework.h2.repositories.AuthorRepositoryH2;
+import spring.homework.h2.repositories.GenreRepositoryH2;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
+@RequiredArgsConstructor
 public class HandlerBookService {
 
-    @Autowired
-    @Qualifier("genreDaoH2")
-    private GenreDao genreDaoH2;
-    @Autowired
-    @Qualifier("authorDaoH2")
-    private AuthorDao authorDaoH2;
+    private final GenreRepositoryH2 genreRepositoryH2;
+    private final AuthorRepositoryH2 authorRepositoryH2;
+    private final CacheManager cacheManager;
 
     public BookH2 handle(Book mongoBook){
         String genreName= mongoBook.getGenre().getName();
-        GenreH2 genreH2=genreDaoH2.findByName(genreName).get(0);
+        GenreH2 genreH2= cacheManager.getCache("genre").get(genreName,GenreH2.class);
         String authorFullName= mongoBook.getAuthor().getFullName();
-        AuthorH2 authorH2=authorDaoH2.findByFullName(authorFullName).get(0);
+        AuthorH2 authorH2=cacheManager.getCache("author").get(authorFullName,AuthorH2.class);
         BookH2 bookH2=new BookH2(mongoBook.getName(),authorH2,genreH2,new ArrayList<>());
         return bookH2;
     }

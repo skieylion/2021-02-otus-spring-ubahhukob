@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Web</title>
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4.3.2/css/metro-all.min.css">
+
+    <script src="/axios.js"></script>
+    <script src="/actions.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+    <div class="pos-absolute w-100 h-100">
+        <div id="splitter_main" data-role="splitter" class="h-100 w-100" data-split-sizes="30, 70" data-save-state=true data-gutter-size="10">
+            <div class="d-flex flex-row-r w-100" >
+                <ul  data-tabs-position="vertical h-100" data-role="tabs" class="no-border">
+                    <li>
+                        <a href="#target_1" style="justify-content:right;">
+                            find all books
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#target_2" style="justify-content:right;">
+                            find a book
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#target_3" style="justify-content:right;">
+                            update a book
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#target_4" style="justify-content:right;">
+                            create a book
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#target_5" style="justify-content:right;">
+                            delete a book
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div data-role="splitter" data-split-mode="vertical">
+                <div class="d-flex flex-justify-center flex-align-center">
+                    <div class="bd-default no-border-top p-2 w-100 h-100" >
+                        <!-- find all books -->
+                        <div id="target_1" class="w-100 h-100" >
+                            <button class="button success" onclick="findAll()">find all</button>
+                        </div>
+                        <!-- find a book -->
+                        <div id="target_2" class="w-100 h-100" >
+                            <form id="myForm2" action="javascript:" data-role="validator" onsubmit="find()">
+                                <div class="form-group">
+                                    <label>book id</label>
+                                    <input type="text" name="id" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct id with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="button success">find</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- update a book -->
+                        <div id="target_3" class="w-100 h-100" >
+                            <form id="myForm3" action="javascript:" data-role="validator" onsubmit="update()">
+                                <div class="form-group">
+                                    <label>book id</label>
+                                    <input type="text" name="id" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct id with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <label>new name</label>
+                                    <input type="text" name="name" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct name with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="button success">update</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- create a book -->
+                        <div id="target_4" class="w-100 h-100" >
+                            <form id="myForm4" action="javascript:" data-role="validator" onsubmit="create()">
+                                <div class="form-group">
+                                    <label>book name</label>
+                                    <input type="text" name="name" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct id with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <label>author</label>
+                                    <input type="text" name="author" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct name with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <label>genre</label>
+                                    <input type="text" name="genre" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct name with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <label>comment</label>
+                                    <input type="text" name="comment" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct name with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="button success">create</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- delete a book -->
+                        <div id="target_5" class="w-100 h-100" >
+                            <form id="myForm5" action="javascript:" data-role="validator" onsubmit="deleteBook()">
+                                <div class="form-group">
+                                    <label>book id</label>
+                                    <input type="text" name="id" data-validate="required minlength=1" />
+                                    <span class="invalid_feedback">
+                                        Input correct id with min length 1 symbols
+                                    </span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="button success">delete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-justify-center flex-align-top"><!-- table of books -->
+                    <div id="books" class="w-100">
+                        <table-component></table-component>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
+    <script src="/table.js"></script>
+</body>
+</html>

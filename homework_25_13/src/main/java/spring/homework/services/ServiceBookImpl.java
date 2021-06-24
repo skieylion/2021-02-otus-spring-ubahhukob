@@ -1,77 +1,62 @@
 package spring.homework.services;
 
-import org.bson.types.ObjectId;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Book;
 import spring.homework.exceptions.BookException;
 import spring.homework.repositories.*;
-
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceBookImpl implements ServiceBook{
-    private final BookDao bookDao;
-    private final AuthorDao authorDao;
-    private final GenreDao genreDao;
-    private final CommentDao commentDao;
-    private final ServiceStringBook serviceStringBook;
 
-    private final UserDao userDao;
+    private final BookRepository bookRepository;
+    private final CommentRepository commentRepository;
 
-    public ServiceBookImpl(BookDao bookDao, AuthorDao authorDao, GenreDao genreDao, CommentDao commentDao, ServiceStringBook serviceStringBook, UserDao userDao) {
-        this.bookDao = bookDao;
-        this.authorDao = authorDao;
-        this.genreDao = genreDao;
-        this.commentDao = commentDao;
-        this.serviceStringBook = serviceStringBook;
-        this.userDao = userDao;
+    @Override
+    @Transactional(readOnly = true)
+    public Book read(long id) throws BookException {
+        return bookRepository.findById(id);
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public Book read(String id) throws BookException {
-        return bookDao.findById(id).orElseThrow(BookException::new);
-    }
-
     @Transactional(readOnly = true)
-    @Override
     public List<Book> readAll() {
-        //System.out.println(userDao.findByLogin("ivanov").getRole());
-        List<Book> bookList=bookDao.findAll();
+        List<Book> bookList= bookRepository.findAll();
         return bookList;
     }
 
     @Override
     @Transactional
-    public void update(String bookId, String newName) throws BookException {
-        Book book=bookDao.findById(bookId).orElseThrow(BookException::new);
+    public void update(long bookId, String newName) throws BookException {
+        Book book= bookRepository.findById(bookId);
         book.setName(newName);
-        bookDao.save(book);
+        bookRepository.save(book);
     }
 
     @Override
     @Transactional
-    public void delete(String bookId) {
-	    commentDao.deleteByBookId(bookId);
-        if(bookDao.existsById(bookId)) {
-            bookDao.deleteById(bookId);
+    public void delete(long bookId) {
+	    commentRepository.deleteByBookId(bookId);
+        if(bookRepository.existsById(bookId)) {
+            bookRepository.deleteById(bookId);
         }
     }
 
     @Override
     @Transactional
-    public String create(Book book) throws BookException {
+    public long create(Book book) throws BookException {
 
         book.getComments().forEach(comment -> {
-            comment.setId(new ObjectId().toHexString());
+            comment.setId((int) (Math.random() * 99999999));
         });
 
-        book=bookDao.save(book);
-        commentDao.saveAll(book.getComments());
+        book= bookRepository.save(book);
+        commentRepository.saveAll(book.getComments());
 
-        String id=book.getId();
-        return id;
+        return book.getId();
     }
 
 }

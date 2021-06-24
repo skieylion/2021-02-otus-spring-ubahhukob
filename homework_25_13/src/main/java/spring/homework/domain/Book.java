@@ -1,26 +1,42 @@
 package spring.homework.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@Document(collection = "Book")
+@Entity
+@Table(name = "BOOK")
 public class Book {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "name")
     private String name;
 
+    @ManyToOne(targetEntity = Author.class,cascade = CascadeType.ALL)
+    @JoinColumn(name = "author_id")
     private Author author;
+    @ManyToOne(targetEntity = Genre.class,cascade = CascadeType.ALL)
+    @JoinColumn(name = "genre_id")
     private Genre genre;
-    @DBRef
+
+    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(targetEntity = Comment.class,mappedBy = "book",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public Book(String id, String name, Author author, Genre genre, List<Comment> comments) {
+    public List<Comment> getComments() {
+        if(comments ==null) return new ArrayList<>();
+        return comments;
+    }
+
+    public void setComment(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Book(long id, String name, Author author, Genre genre, List<Comment> comments) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -28,11 +44,12 @@ public class Book {
         this.comments = comments;
     }
 
-    public Book(String id, String name, Author author, Genre genre) {
+    public Book(long id, String name, Author author, Genre genre) {
         this.id = id;
         this.name = name;
         this.author = author;
         this.genre = genre;
+
     }
 
     public Book(String name, Author author, Genre genre, List<Comment> comments) {
@@ -42,13 +59,51 @@ public class Book {
         this.comments = comments;
     }
 
-    public Book(String id, String name) {
+    public Book() {
+    }
+
+    public Book(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    public Book(long id) {
+        this.id = id;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public Genre getGenre() {
+        return genre;
+    }
+
     public Book(String name) {
         this.name = name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+    public void setId(long id) {
+        this.id=id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

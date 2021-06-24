@@ -1,31 +1,69 @@
 package spring.homework.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
-@NoArgsConstructor
-@Document(collection = "Comment")
+import javax.persistence.*;
+
+@Entity
+@Table(name = "COMMENT")
 public class Comment {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "description")
     private String description;
 
+    @ManyToOne(targetEntity = Book.class,fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id")
     @JsonIgnore
-    @DBRef
     private Book book;
 
-    public Comment(String id, String description) {
+    public Comment() {
+    }
+
+    public Comment(long id, String description) {
         this.id = id;
         this.description = description;
+    }
+
+    public Comment(long id) {
+        this.id = id;
     }
 
     public Comment(String description) {
         this.description = description;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", book=" + book +
+                '}';
+    }
 }

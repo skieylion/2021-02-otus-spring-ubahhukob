@@ -56,7 +56,6 @@ function deleteBook(){
     return false;
 }
 function findAll(){
-    console.log(123);
     axios.get("/book")
     .then((response) => {
         viewListBook(response.data);

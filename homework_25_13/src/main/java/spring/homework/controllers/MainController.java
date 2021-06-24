@@ -9,13 +9,13 @@ import java.util.List;
 
 @Controller
 public class MainController {
-    @GetMapping("/")
-    public String login(){
-        return "redirect:/login";
-    }
-
     @GetMapping("/index")
     public String index(){
         return "index";
+    }
+
+    @GetMapping("/")
+    public String login(){
+        return "redirect:/login";
     }
 }

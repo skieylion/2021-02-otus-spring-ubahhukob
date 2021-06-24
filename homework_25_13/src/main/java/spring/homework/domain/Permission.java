@@ -3,7 +3,6 @@ package spring.homework.domain;
 public enum Permission {
     READ("READ"),WRITE("WRITE");
 
-
     private final String permission;
 
     Permission(String permission) {

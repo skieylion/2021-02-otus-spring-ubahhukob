@@ -1,25 +1,17 @@
 package spring.homework.domain;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import javax.persistence.*;
 
 @Data
-@NoArgsConstructor
+@Entity
+@Table(name = "ROLE")
 public class Role {
 
-    private String name;
-    private List<String> permissions;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    public Set<SimpleGrantedAuthority> getAuthorities(){
-        return  getPermissions()
-                .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission))
-                .collect(Collectors.toSet());
-    }
+    @Column(name = "name")
+    private String name;
 }

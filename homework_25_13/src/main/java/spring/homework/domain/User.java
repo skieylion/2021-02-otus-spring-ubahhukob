@@ -1,18 +1,23 @@
 package spring.homework.domain;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.persistence.*;
 
 @Data
-@NoArgsConstructor
-@Document(collection = "User")
+@Entity
+@Table(name = "USER")
 public class User {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "login")
     private String login;
+    @Column(name = "name")
     private String name;
+    @Column(name = "password")
     private String password;
+
+    @ManyToOne(targetEntity = Role.class,cascade = CascadeType.ALL)
+    @JoinColumn(name = "role_id")
     private Role role;
 }

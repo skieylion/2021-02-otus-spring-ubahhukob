@@ -5,30 +5,20 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import spring.homework.controllers.BookController;
-import spring.homework.controllers.MainController;
 import spring.homework.domain.Author;
 import spring.homework.domain.Book;
 import spring.homework.domain.Genre;
-import spring.homework.repositories.BookDao;
 import spring.homework.services.ServiceBook;
-import spring.homework.services.ServiceUserDetailsImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,27 +43,20 @@ class BookControllerTest {
     @MockBean
     private ServiceBook serviceBook;
 
-    @MockBean
-    private ServiceUserDetailsImpl serviceUserDetails;
-
-    @MockBean
-    private MongoTemplate mongoTemplate;
-
-
     @DisplayName("read book")
     @WithMockUser(
             username = "user",
-            authorities = {"READ"}
+            password = "password"
     )
     @Test
     void readBook() throws Exception {
         Book book=new Book("MyBook",new Author("Author",""),new Genre("Genre"),new ArrayList<>());
 
-        when(serviceBook.read("3333cc3a3d6d754095f46023"))
+        when(serviceBook.read(1))
         .thenReturn(book);
 
         mvc
-        .perform(get("/book/3333cc3a3d6d754095f46023"))
+        .perform(get("/book/1"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("MyBook")));
@@ -82,7 +65,7 @@ class BookControllerTest {
     @DisplayName("read book all")
     @WithMockUser(
             username = "user",
-            authorities = {"READ"}
+            password = "password"
     )
     @Test
     void readBookAll() throws Exception {
@@ -104,19 +87,19 @@ class BookControllerTest {
     @DisplayName("update book")
     @WithMockUser(
             username = "admin",
-            authorities = {"WRITE","READ"}
+            password = "password"
     )
     @Test
     void updateBook() throws Exception {
 
-        Book book=new Book("3333cc3a3d6d754095f46023","Name1");
+        Book book=new Book(2L,"Name1");
 
         Mockito
         .doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
 
-                String id=invocation.getArgument(0);
+                long id=invocation.getArgument(0);
                 String name=invocation.getArgument(1);
                 book.setId(id);
                 book.setName(name);
@@ -124,7 +107,7 @@ class BookControllerTest {
             }
         })
         .when(serviceBook)
-        .update("3553cc3a3d6d754095f46023","Name2");
+        .update(2L,"Name2");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -140,7 +123,7 @@ class BookControllerTest {
     @DisplayName("delete book")
     @WithMockUser(
             username = "admin",
-            authorities = {"WRITE","READ"}
+            password = "password"
     )
     @Test
     void deleteBook() throws Exception {
@@ -152,11 +135,11 @@ class BookControllerTest {
             }
         })
         .when(serviceBook)
-        .delete("3553cc3a3d6d754095f46023");
+        .delete(1L);
 
 
         mvc
-        .perform(delete("/book/4551cc3a3d6d754095f46023"))
+        .perform(delete("/book/1"))
         .andDo(print())
         .andExpect(status().isOk());
     }
@@ -164,14 +147,14 @@ class BookControllerTest {
     @DisplayName("create book")
     @WithMockUser(
             username = "admin",
-            authorities = {"WRITE","READ"}
+            password = "password"
     )
-    @Test
+   @Test
     void createBook() throws Exception {
         Book book=new Book("Книга",new Author("Автор",""),new Genre("Жанр"),new ArrayList<>());
 
         when(serviceBook.create(book))
-        .thenReturn("2233cc3a3d6d754095f46023");
+        .thenReturn(3L);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);

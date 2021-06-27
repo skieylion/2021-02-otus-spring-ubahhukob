@@ -50,10 +50,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("admin").password("password").roles("EDITOR")
+                .withUser("admin").password("admin").roles("EDITOR")
                 .and()
-                .withUser("user").password("password").roles("USER")
+                .withUser("user").password("user").roles("USER")
                 .and()
-                .withUser("someone").password("password").roles("SOMEONE");
+                .withUser("someone").password("someone").roles("SOMEONE");
     }
 }

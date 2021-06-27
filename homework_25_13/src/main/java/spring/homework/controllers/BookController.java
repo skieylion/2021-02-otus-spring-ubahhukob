@@ -36,6 +36,8 @@ public class BookController {
 
     @PostMapping("/book")
     public long create(@RequestBody Book book) throws BookException {
+        System.out.println("create controller");
+        System.out.println(book);
         return serviceBook.create(book);
     }
 }

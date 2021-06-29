@@ -16,10 +16,10 @@ public class Book {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne(targetEntity = Author.class)
+    @ManyToOne(targetEntity = Author.class,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "author_id")
     private Author author;
-    @ManyToOne(targetEntity = Genre.class)
+    @ManyToOne(targetEntity = Genre.class,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 

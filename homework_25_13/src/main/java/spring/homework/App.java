@@ -10,6 +10,7 @@ public class App {
 
     public static void main(String[] args) throws SQLException {
         SpringApplication.run(App.class, args);
+        Console.main(args);
     }
 
 }

@@ -5,22 +5,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
-import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
-import org.springframework.integration.dsl.MessageChannels;
-import org.springframework.integration.dsl.Pollers;
+import org.springframework.integration.dsl.*;
 import org.springframework.integration.scheduling.PollerMetadata;
 
-@IntegrationComponentScan
+
 @Configuration
+@IntegrationComponentScan
 public class IntegrationReport {
     @Bean
-    public QueueChannel itemsChannel() {
-        return MessageChannels.queue( 10 ).get();
+    public QueueChannel weatherChannel() {
+        return MessageChannels.queue( 7 ).get();
     }
 
     @Bean
-    public PublishSubscribeChannel foodChannel() {
+    public PublishSubscribeChannel reportChannel() {
         return MessageChannels.publishSubscribe().get();
     }
 
@@ -30,12 +28,12 @@ public class IntegrationReport {
     }
 
     @Bean
-    public IntegrationFlow cafeFlow() {
-        return IntegrationFlows.from( "itemsChannel" )
-                .split()
-                .handle( "kitchenService", "cook" )
-                .aggregate()
-                .channel( "foodChannel" )
+    public IntegrationFlow weatherFlow() {
+        return IntegrationFlows.from( "weatherChannel" )
+                .log()
+                .handle( "weatherService", "handle" )
+                .log()
+                .channel( "reportChannel" )
                 .get();
     }
 }

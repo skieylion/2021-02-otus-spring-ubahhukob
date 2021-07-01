@@ -5,12 +5,14 @@ import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 import spring.homework.domain.Food;
 import spring.homework.domain.OrderItem;
+import spring.homework.domain.WeatherInfo;
+import spring.homework.domain.WeatherReport;
 
 import java.util.Collection;
 
 @MessagingGateway
-public interface Cafe {
+public interface GateReport {
 
-    @Gateway(requestChannel = "itemsChannel", replyChannel = "foodChannel")
-    Collection<Food> process(Collection<OrderItem> orderItem);
+    @Gateway(requestChannel = "weatherChannel", replyChannel = "reportChannel")
+    WeatherReport process(Collection<WeatherInfo> weatherInfo);
 }

@@ -1,53 +1,47 @@
 package spring.homework.service;
 
-import org.apache.commons.lang3.RandomUtils;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import spring.homework.App;
-import spring.homework.Cafe;
-import spring.homework.domain.Food;
-import spring.homework.domain.OrderItem;
+import spring.homework.GateReport;
+import spring.homework.domain.WeatherInfo;
+import spring.homework.domain.WeatherReport;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class TemperatureGeneratorServiceImpl implements TemperatureGeneratorService {
-    private static final String[] MENU = { "coffee", "tea", "smoothie", "whiskey", "beer", "cola", "water" };
+    private final GateReport gateReport;
 
-    private static OrderItem generateOrderItem() {
-        return new OrderItem( MENU[ RandomUtils.nextInt( 0, MENU.length ) ] );
-    }
-
-    private static Collection<OrderItem> generateOrderItems() {
-        List<OrderItem> items = new ArrayList<>();
-        for ( int i = 0; i < RandomUtils.nextInt( 1, 5 ); ++ i ) {
-            items.add( generateOrderItem() );
+    private static Collection<WeatherInfo> generateWeatherWeek(int offset) {
+        List<WeatherInfo> items = new ArrayList<>();
+        for ( int i = offset; i < 7+offset; ++ i ) {
+            items.add(new WeatherInfo(8f,Date.from(Instant.now().plusSeconds(i*3600*24))));
         }
         return items;
     }
 
     @Override
-    public void generate() {
+    public void generate() throws InterruptedException {
         ForkJoinPool pool = ForkJoinPool.commonPool();
+        int offset=0;
 
         while ( true ) {
-            Thread.sleep( 7000 );
-
+            Thread.sleep( 4000 );
+            final int finalOffset = offset;
             pool.execute( () -> {
-                Collection<OrderItem> items = generateOrderItems();
-                System.out.println( "New orderItems: " +
-                        items.stream().map( OrderItem::getItemName )
-                                .collect( Collectors.joining( "," ) ) );
-                Collection<Food> food = cafe.process( items );
-                System.out.println( "Ready food: " + food.stream()
-                        .map( Food::getName )
-                        .collect( Collectors.joining( "," ) ) );
+                System.out.println("start");
+                Collection<WeatherInfo> items = generateWeatherWeek(finalOffset);
+                WeatherReport weatherReport = gateReport.process( items );
+                System.out.println("end");
             } );
+            offset+=7;
         }
     }
 }

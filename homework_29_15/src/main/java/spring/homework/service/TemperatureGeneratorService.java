@@ -1,5 +1,5 @@
 package spring.homework.service;
 
 public interface TemperatureGeneratorService {
-    void generate();
+    void generate() throws InterruptedException;
 }

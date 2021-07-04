@@ -22,3 +22,4 @@
 | Spring Security: Механизмы аутентификации | homework_23_12 |
 | Spring Security: ACL  | homework_25_13 |
 | Spring Batch | homework_26_14 |
+| Spring Integration: Endpoints и Flow Components | homework_29_15 |

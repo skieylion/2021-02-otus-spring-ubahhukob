@@ -4,12 +4,6 @@ logging:
     name: app.log
 management:
   endpoint:
-    mongo:
-      enabled: true
-      show-details: always
-    diskspace:
-      enabled: true
-      show-details: always
     health:
       enabled: true
       show-details: always
@@ -21,7 +15,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "metrics,logfile,health"
 spring:
   datasource:
     url: jdbc:h2:mem:testdb

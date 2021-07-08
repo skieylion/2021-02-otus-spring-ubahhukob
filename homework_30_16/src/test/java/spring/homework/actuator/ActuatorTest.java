@@ -58,4 +58,14 @@ class ActuatorTest {
         .andDo(print())
         .andExpect(content().string(containsString("An estimate of the number of buffers in the pool")));
     }
+
+    @DisplayName("my indicator")
+    @Test
+    void my() throws Exception {
+        mvc
+        .perform(get("/actuator/health/my"))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andExpect(content().string(containsString("7")));
+    }
 }

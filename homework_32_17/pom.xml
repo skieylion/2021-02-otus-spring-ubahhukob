@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>spring.homework</groupId>
 	<artifactId>homework_32_17</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1-SNAPSHOT</version>
 	<name>homework_32_17</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>

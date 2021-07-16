@@ -1,22 +1,6 @@
-# Builds up an image
-#
-# 2020-04-20 Vasily Eremenko <eremenko.vo@pecom.ru>
-
-FROM openjdk:8-jdk
-
+FROM openjdk:11-jdk
+LABEL maintainer="ivannikov.em"
 WORKDIR /app
-
-ADD target/event-manager-web-1-SNAPSHOT.jar .
-ADD devtools/application.properties .
-ADD devtools/logback.xml .
-
+COPY target/homework_32_17-1-SNAPSHOT.jar .
 EXPOSE 8080
-EXPOSE 8443
-EXPOSE 9990
-
-CMD ["java", \
-"-Duser.timezone=GMT+03:00", \
-"-Dpecom.logging.category=event-manager-web", \
-"-Dpecom.logging.footprint.prefix=EMW", \
-"-Dspring.config.additional-location=./application.properties", \
-"-jar", "event-manager-web-1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "homework_32_17-1-SNAPSHOT.jar"]

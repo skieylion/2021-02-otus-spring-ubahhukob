@@ -8,7 +8,6 @@ import java.sql.SQLException;
 
 
 @SpringBootApplication
-@EnableWebMvc
 public class App {
 
     public static void main(String[] args) throws SQLException {

@@ -1,5 +1,5 @@
 FROM openjdk:11-jdk
-LABEL maintainer="ivannikov.em"
+LABEL maintainer="ubahhukob@ya.ru"
 WORKDIR /app
 COPY target/homework_32_17-1-SNAPSHOT.jar .
 EXPOSE 8080

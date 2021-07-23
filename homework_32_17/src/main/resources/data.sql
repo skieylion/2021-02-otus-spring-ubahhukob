@@ -1,3 +1,8 @@
+DELETE FROM COMMENT;
+DELETE FROM BOOK;
+DELETE FROM AUTHOR;
+DELETE FROM GENRE;
+
 insert into GENRE (ID,NAME) values (1, 'Роман');
 insert into GENRE (ID,NAME) values (2, 'Поэма');
 

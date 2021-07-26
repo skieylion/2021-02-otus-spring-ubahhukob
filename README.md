@@ -23,3 +23,5 @@
 | Spring Security: ACL  | homework_25_13 |
 | Spring Batch | homework_26_14 |
 | Spring Integration: Endpoints и Flow Components | homework_29_15 |
+| Монолиты vs. Microservices (Round 2), Spring Boot Actuator - must have в микросервисах | homework_30_16 |
+| Docker, оркестрация, облака, облачные хостинги | homework_32_17 |

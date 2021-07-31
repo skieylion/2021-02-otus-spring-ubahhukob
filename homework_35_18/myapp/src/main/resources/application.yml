@@ -1,9 +1,4 @@
-server:
-  connection-timeout: 5s
 spring:
-  shell:
-    interactive:
-      enabled: false
   data:
     mongodb:
       host: localhost

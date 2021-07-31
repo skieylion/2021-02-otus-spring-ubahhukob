@@ -1,15 +1,18 @@
 package spring.homework.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
+import spring.homework.model.BookVO;
 
+import java.net.URI;
 import java.util.Date;
 
 @Service
@@ -21,40 +24,57 @@ public class HystrixService {
     @Autowired
     private final RestTemplate restTemplate;
 
-    private ResponseEntity<String> fallback() {
+    private ResponseEntity<String> fallbackFindAll() {
         return ResponseEntity.badRequest().body("Error");
     }
+    private ResponseEntity<String> fallbackCreate(BookVO book) {
+        return ResponseEntity.badRequest().body("Error book");
+    }
+    private ResponseEntity<String> fallbackFind(String id) {
+        return ResponseEntity.badRequest().body("Error find by id="+id);
+    }
+    private ResponseEntity<String> fallbackDelete(String id) {
+        return ResponseEntity.badRequest().body("Error delete by id="+id);
+    }
+    private ResponseEntity<String> fallbackUpdate(BookVO book) {
+        return ResponseEntity.badRequest().body("Error update");
+    }
 
-    @HystrixCommand(fallbackMethod = "fallback")
+    @HystrixCommand(fallbackMethod = "fallbackFind")
     public ResponseEntity<String> find(String id){
-        String response =restTemplate.getForObject(host+"/find/"+id,String.class);
+        String response =restTemplate.getForObject(host+"/book/"+id,String.class);
         assert response != null;
         return ResponseEntity.ok(response);
     }
-    @HystrixCommand(fallbackMethod = "fallback")
+    @HystrixCommand(fallbackMethod = "fallbackFindAll")
     public ResponseEntity<String> findAll(){
-        String response =restTemplate.getForObject(host+"/find",String.class);
+        String response =restTemplate.getForObject(host+"/book",String.class);
         assert response != null;
         return ResponseEntity.ok(response);
     }
 
-    @HystrixCommand(fallbackMethod = "fallback")
+    @HystrixCommand(fallbackMethod = "fallbackDelete")
     public ResponseEntity<String> delete(String id){
-        String response =restTemplate.getForObject(host+"/delete/"+id,String.class);
-        assert response != null;
-        return ResponseEntity.ok(response);
+        restTemplate.delete(host+"/book/"+id);
+        return ResponseEntity.ok().build();
     }
-    @HystrixCommand(fallbackMethod = "fallback")
-    public ResponseEntity<String> update(String id,String name){
-        String response =restTemplate.getForObject(host+"/update/"+id+"?name="+name,String.class);
-        assert response != null;
-        return ResponseEntity.ok(response);
+    @HystrixCommand(fallbackMethod = "fallbackUpdate")
+    public ResponseEntity<String> update(BookVO book){
+        restTemplate.put(host+"/book",book);
+        return ResponseEntity.ok().build();
     }
-    @HystrixCommand(fallbackMethod = "fallback")
-    public ResponseEntity<String> create(String name,String author,String genre,String comment){
-        String response =restTemplate.getForObject(host+"/create?name="+name+"&author="+author+"&genre="+genre+"&comment="+comment,String.class);
-        assert response != null;
-        return ResponseEntity.ok(response);
+
+    @HystrixCommand(fallbackMethod = "fallbackCreate")
+    public ResponseEntity<String> create(BookVO book) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String  bookAsString = objectMapper.writeValueAsString(book);
+        System.out.println(bookAsString);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<String>(bookAsString, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(host+"/book",entity,String.class);
+        System.out.println(response);
+        return response;
     }
 
     public ResponseEntity<String> index(){
@@ -64,7 +84,7 @@ public class HystrixService {
     }
 
     public ResponseEntity<String> path(String path){
-        String response =restTemplate.getForObject(host+"/view/"+path,String.class);
+        String response =restTemplate.getForObject(host+"/"+path,String.class);
         assert response != null;
         return ResponseEntity.ok(response);
     }

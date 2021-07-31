@@ -1,7 +1,6 @@
 package spring.homework.services;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spring.homework.domain.Author;
@@ -56,31 +55,23 @@ public class ServiceBookImpl implements ServiceBook{
 
     @Override
     @Transactional
-    public boolean delete(String bookId) {
+    public void delete(String bookId) {
 	    commentDao.deleteByBookId(bookId);
         if(bookDao.existsById(bookId)) {
             bookDao.deleteById(bookId);
-            return true;
         }
-        return false;
     }
 
     @Override
     @Transactional
-    public String create(String bookName, String authorName, String genreName, String commentValue) throws BookException {
-        Author author=new Author(authorName,"");
-        Genre genre=new Genre(genreName);
-        Comment comment=new Comment(new ObjectId().toHexString(),commentValue);
-        author.setId(authorDao.save(author).getId());
-        genre.setId(genreDao.save(genre).getId());
-        List<Comment> commentList=new ArrayList<>();
-        commentList.add(comment);
-        //comment=commentDao.save(comment);
-        Book book=new Book(bookName,author,genre,commentList);
-        book=bookDao.save(book);
+    public String create(Book book) throws BookException {
 
-        comment.setBook(book);
-        commentDao.save(comment);
+        book.getComments().forEach(comment -> {
+            comment.setId(new ObjectId().toHexString());
+        });
+
+        book=bookDao.save(book);
+        commentDao.saveAll(book.getComments());
 
         String id=book.getId();
         return id;

@@ -1,11 +1,13 @@
 package spring.homework.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import spring.homework.model.BookVO;
 import spring.homework.service.HystrixService;
 
 import java.util.Arrays;
@@ -18,54 +20,42 @@ public class HystrixController {
     @Autowired
     private final HystrixService hystrixService;
 
-    @GetMapping("/find/{id}")
+    @GetMapping("/book/{id}")
     public ResponseEntity<String> find(@PathVariable("id") String id)  {
         return hystrixService.find(id);
     }
 
-    @GetMapping("/find")
+    @GetMapping("/book")
     public ResponseEntity<String> findAll(String id, Model model){
         return hystrixService.findAll();
     }
 
-    @PostMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") String id) {
-        return hystrixService.delete(id);
+    @DeleteMapping("/book/{id}")
+    public void delete(@PathVariable("id") String id) {
+        hystrixService.delete(id);
     }
 
-    @GetMapping("/update/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") String id,@RequestParam("name") String name) {
-        return hystrixService.update(id,name);
+    @PutMapping("/book")
+    public void update(@RequestBody BookVO book) {
+        hystrixService.update(book);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestParam("name") String name,@RequestParam("author") String author, @RequestParam("genre") String genre,@RequestParam("comment") String comment) {
-        return hystrixService.create(name,author,genre,comment);
+    @PostMapping("/book")
+    public ResponseEntity<String> create(@RequestBody BookVO book) throws JsonProcessingException {
+        return hystrixService.create(book);
     }
     @GetMapping("/")
     public ResponseEntity<String> index() {
         return hystrixService.index();
     }
 
-    @GetMapping("/view/find")
+    @GetMapping("/table")
     public ResponseEntity<String> find(){
-        return hystrixService.path("find");
+        return hystrixService.path("table.js");
     }
-    @GetMapping("/view/find-all")
+    @GetMapping("/actions")
     public ResponseEntity<String> findAll(){
-        return hystrixService.path("find-all");
-    }
-    @GetMapping("/view/update")
-    public ResponseEntity<String> update(){
-        return hystrixService.path("update");
-    }
-    @GetMapping("/view/create")
-    public ResponseEntity<String> create(){
-        return hystrixService.path("create");
-    }
-    @GetMapping("/view/delete")
-    public ResponseEntity<String> delete(){
-        return hystrixService.path("delete");
+        return hystrixService.path("actions.js");
     }
 
 }

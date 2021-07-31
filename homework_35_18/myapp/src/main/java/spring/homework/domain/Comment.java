@@ -1,5 +1,6 @@
 package spring.homework.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -13,6 +14,8 @@ public class Comment {
     @Id
     private String id;
     private String description;
+
+    @JsonIgnore
     @DBRef
     private Book book;
 

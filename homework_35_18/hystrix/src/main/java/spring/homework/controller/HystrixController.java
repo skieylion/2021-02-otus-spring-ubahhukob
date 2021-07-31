@@ -26,7 +26,7 @@ public class HystrixController {
     }
 
     @GetMapping("/book")
-    public ResponseEntity<String> findAll(String id, Model model){
+    public ResponseEntity<String> findAll(){
         return hystrixService.findAll();
     }
 
@@ -50,11 +50,11 @@ public class HystrixController {
     }
 
     @GetMapping("/table")
-    public ResponseEntity<String> find(){
+    public ResponseEntity<String> table(){
         return hystrixService.path("table.js");
     }
     @GetMapping("/actions")
-    public ResponseEntity<String> findAll(){
+    public ResponseEntity<String> actions(){
         return hystrixService.path("actions.js");
     }
 

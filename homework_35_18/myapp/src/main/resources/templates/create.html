@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Web</title>
+    <!-- Подключаем metro ui -->
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4.3.2/css/metro-all.min.css">
+
+</head>
+<body>
+<form action="../create" method="POST" data-role="validator">
+    <div class="form-group">
+        <label>book name</label>
+        <input type="text" name="name" data-validate="required minlength=1" />
+        <span class="invalid_feedback">
+            Input correct id with min length 1 symbols
+        </span>
+    </div>
+    <div class="form-group">
+        <label>author</label>
+        <input type="text" name="author" data-validate="required minlength=1" />
+        <span class="invalid_feedback">
+            Input correct name with min length 1 symbols
+        </span>
+    </div>
+    <div class="form-group">
+        <label>genre</label>
+        <input type="text" name="genre" data-validate="required minlength=1" />
+        <span class="invalid_feedback">
+            Input correct name with min length 1 symbols
+        </span>
+    </div>
+    <div class="form-group">
+        <label>comment</label>
+        <input type="text" name="comment" data-validate="required minlength=1" />
+        <span class="invalid_feedback">
+            Input correct name with min length 1 symbols
+        </span>
+    </div>
+    <div class="form-group">
+        <button class="button success">create</button>
+    </div>
+</form>
+<script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script>
+</body>
+</html>

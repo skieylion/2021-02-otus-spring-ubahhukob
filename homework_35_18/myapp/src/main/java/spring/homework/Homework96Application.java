@@ -5,12 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.sql.SQLException;
 
-
 @SpringBootApplication
-public class App {
+public class Homework96Application {
 
     public static void main(String[] args) throws SQLException {
-        SpringApplication.run(App.class, args);
+        SpringApplication.run(Homework96Application.class, args);
     }
 
 }

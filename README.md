@@ -25,3 +25,4 @@
 | Spring Integration: Endpoints и Flow Components | homework_29_15 |
 | Монолиты vs. Microservices (Round 2), Spring Boot Actuator - must have в микросервисах | homework_30_16 |
 | Docker, оркестрация, облака, облачные хостинги | homework_32_17 |
+| Zuul, Hystrix Circuit Breaker, Sleuth, Zipkin, Hystrix Dashboard, Secure Configuration Properties | homework_35_18 |

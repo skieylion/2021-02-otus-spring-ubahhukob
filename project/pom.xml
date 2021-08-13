@@ -17,8 +17,10 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>BattleShipCommon</module>
         <module>BattleShipBot</module>
         <module>BattleShipEngine</module>
+        <module>BattleShipManager</module>
     </modules>
 
     <dependencies>
@@ -27,4 +29,5 @@
             <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
+
 </project>

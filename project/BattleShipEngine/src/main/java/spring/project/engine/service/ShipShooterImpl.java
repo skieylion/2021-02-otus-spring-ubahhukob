@@ -1,6 +1,10 @@
 package spring.project.engine.service;
 
 import org.springframework.stereotype.Service;
+import spring.project.common.model.BattleField;
+import spring.project.common.model.CellType;
+import spring.project.common.model.FireResult;
+import spring.project.common.model.Point;
 import spring.project.engine.model.*;
 
 import java.util.Arrays;
@@ -9,56 +13,56 @@ import java.util.List;
 @Service
 public class ShipShooterImpl implements ShipShooter {
 
-    private DirectionType findDirectionShipByPoint(BattleField battleField, int x, int y){
+    private DirectionType findDirectionShipByPoint(BattleField battleField, int x, int y) {
         DirectionType directionType = DirectionType.ZERO;
-        List<CellType> cells=Arrays.asList(CellType.FULL, CellType.DAMAGE);
-        if(cells.contains(battleField.getCellWithoutBorder(y-1,x))){
+        List<CellType> cells = Arrays.asList(CellType.FULL, CellType.DAMAGE);
+        if (cells.contains(battleField.getCellWithoutBorder(y - 1, x))) {
             directionType = DirectionType.UP;
-        } else if(cells.contains(battleField.getCellWithoutBorder(y+1,x))){
+        } else if (cells.contains(battleField.getCellWithoutBorder(y + 1, x))) {
             directionType = DirectionType.DOWN;
-        } else if(cells.contains(battleField.getCellWithoutBorder(y,x-1))){
+        } else if (cells.contains(battleField.getCellWithoutBorder(y, x - 1))) {
             directionType = DirectionType.LEFT;
-        } else if(cells.contains(battleField.getCellWithoutBorder(y,x+1))){
+        } else if (cells.contains(battleField.getCellWithoutBorder(y, x + 1))) {
             directionType = DirectionType.RIGHT;
         }
         return directionType;
     }
 
-    private Point getLastPoint(BattleField battleField, Point point, DirectionType directionType){
-        List<CellType> cells=Arrays.asList(CellType.FULL, CellType.DAMAGE);
-        int size= directionType == DirectionType.DOWN|| directionType == DirectionType.UP?battleField.getRows():battleField.getColumns();
-        int oldX=point.getX();
-        int oldY=point.getY();
-        for(int z=1;z<size;z++){
-            int bufferX=point.getX()+ directionType.getX()*z;
-            int bufferY=point.getY()+ directionType.getY()*z;
-            if(cells.contains(battleField.getCellWithoutBorder(bufferY,bufferX))){
-                oldX=bufferX;
-                oldY=bufferY;
+    private Point getLastPoint(BattleField battleField, Point point, DirectionType directionType) {
+        List<CellType> cells = Arrays.asList(CellType.FULL, CellType.DAMAGE);
+        int size = directionType == DirectionType.DOWN || directionType == DirectionType.UP ? battleField.getRows() : battleField.getColumns();
+        int oldX = point.getX();
+        int oldY = point.getY();
+        for (int z = 1; z < size; z++) {
+            int bufferX = point.getX() + directionType.getX() * z;
+            int bufferY = point.getY() + directionType.getY() * z;
+            if (cells.contains(battleField.getCellWithoutBorder(bufferY, bufferX))) {
+                oldX = bufferX;
+                oldY = bufferY;
             } else break;
         }
-        return new Point(oldX,oldY);
+        return new Point(oldX, oldY);
     }
 
-    private int getSizeShipByLastPointAndDirection(BattleField battleField, Point lastPoint, DirectionType directionType){
-        List<CellType> cells=Arrays.asList(CellType.FULL, CellType.DAMAGE);
-        int size= directionType == DirectionType.DOWN|| directionType == DirectionType.UP?battleField.getRows():battleField.getColumns();
-        int sizeShip=0;
-        for(int z=0;z<size;z++){
-            int bufferX=lastPoint.getX()- directionType.getX()*z;
-            int bufferY=lastPoint.getY()- directionType.getY()*z;
-            if(cells.contains(battleField.getCellWithoutBorder(bufferY,bufferX))){
+    private int getSizeShipByLastPointAndDirection(BattleField battleField, Point lastPoint, DirectionType directionType) {
+        List<CellType> cells = Arrays.asList(CellType.FULL, CellType.DAMAGE);
+        int size = directionType == DirectionType.DOWN || directionType == DirectionType.UP ? battleField.getRows() : battleField.getColumns();
+        int sizeShip = 0;
+        for (int z = 0; z < size; z++) {
+            int bufferX = lastPoint.getX() + directionType.getX() * z;
+            int bufferY = lastPoint.getY() + directionType.getY() * z;
+            if (cells.contains(battleField.getCellWithoutBorder(bufferY, bufferX))) {
                 sizeShip++;
             } else break;
         }
         return sizeShip;
     }
 
-    private boolean isKilledShip(BattleField battleField, Ship ship){
-        for(int z=0;z<ship.getSize();z++){
-            int bufferX=ship.getPoint().getX()- ship.getAlign().getX()*z;
-            int bufferY=ship.getPoint().getY()- ship.getAlign().getY()*z;
-            if(battleField.getCellWithoutBorder(bufferY,bufferX)== CellType.FULL){
+    private boolean isKilledShip(BattleField battleField, Ship ship) {
+        for (int z = 0; z < ship.getSize(); z++) {
+            int bufferX = ship.getPoint().getX() + ship.getAlign().getX() * z;
+            int bufferY = ship.getPoint().getY() + ship.getAlign().getY() * z;
+            if (battleField.getCellWithoutBorder(bufferY, bufferX) == CellType.FULL) {
                 return false;
             }
         }
@@ -67,28 +71,31 @@ public class ShipShooterImpl implements ShipShooter {
 
     @Override
     public FireResult fire(BattleField battleField, Point point) {
-        int x=point.getX();
-        int y=point.getY();
+        int x = point.getX();
+        int y = point.getY();
         //System.out.println(x);
         //System.out.println(battleField);
-        if(battleField.checkBorder(x,y)){
-            CellType cell=battleField.getCell(y,x);
+        if (battleField.checkBorder(x, y)) {
+            CellType cell = battleField.getCell(y, x);
             if (cell == CellType.FULL) {
-                battleField.setCell(y,x, CellType.DAMAGE);
-                DirectionType directionType = findDirectionShipByPoint(battleField,x,y);
-                if(directionType == DirectionType.ZERO) return FireResult.KILLED;
-                else {
-                    Point lastPoint=getLastPoint(battleField,new Point(x,y),directionType);
-                    int sizeShip= getSizeShipByLastPointAndDirection(battleField,lastPoint,directionType.getReverseDirection());
-                    if(isKilledShip(battleField,new Ship(sizeShip,lastPoint,directionType.getReverseDirection()))){
-                        int size=battleField.getListIndexesByCellType(CellType.FULL).size();
-                        if(size>0) return FireResult.KILLED;
+                battleField.setCell(y, x, CellType.DAMAGE);
+                DirectionType directionType = findDirectionShipByPoint(battleField, x, y);
+                if (directionType == DirectionType.ZERO) {
+                    int size = battleField.getListIndexesByCellType(CellType.FULL).size();
+                    if (size > 0) return FireResult.KILLED;
+                    else return FireResult.WIN;
+                } else {
+                    Point lastPoint = getLastPoint(battleField, new Point(x, y), directionType);
+                    int sizeShip = getSizeShipByLastPointAndDirection(battleField, lastPoint, directionType.getReverseDirection());
+                    if (isKilledShip(battleField, new Ship(sizeShip, lastPoint, directionType.getReverseDirection()))) {
+                        int size = battleField.getListIndexesByCellType(CellType.FULL).size();
+                        if (size > 0) return FireResult.KILLED;
                         else return FireResult.WIN;
                     }
                     return FireResult.HIT;
                 }
-            } else if(cell == CellType.VOID) {
-                battleField.setCell(y,x, CellType.MISS);
+            } else if (cell == CellType.VOID) {
+                battleField.setCell(y, x, CellType.MISS);
             }
         }
 

@@ -1,6 +1,9 @@
 package spring.project.engine.service;
 
 import org.springframework.stereotype.Service;
+import spring.project.common.model.BattleField;
+import spring.project.common.model.CellType;
+import spring.project.common.model.Point;
 import spring.project.engine.exception.PositionShipNotFoundException;
 import spring.project.engine.model.*;
 

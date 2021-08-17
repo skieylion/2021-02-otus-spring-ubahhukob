@@ -10,6 +10,7 @@ services:
       - 15672:15672
   redis:
     image: redis
+    restart: always
     command: [ "redis-server", "--appendonly", "yes" ]
     hostname: redis
     volumes:

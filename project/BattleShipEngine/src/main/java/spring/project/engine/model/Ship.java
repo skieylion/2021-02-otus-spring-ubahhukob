@@ -2,6 +2,7 @@ package spring.project.engine.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import spring.project.common.model.Point;
 
 @Data
 @AllArgsConstructor

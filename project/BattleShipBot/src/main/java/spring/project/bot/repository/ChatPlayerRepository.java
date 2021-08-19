@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import spring.project.bot.model.Chat;
 
 @Repository
-public interface ChatPlayerRepository extends KeyValueRepository<Chat,Long> {
+public interface ChatPlayerRepository extends KeyValueRepository<Chat, Long> {
 }

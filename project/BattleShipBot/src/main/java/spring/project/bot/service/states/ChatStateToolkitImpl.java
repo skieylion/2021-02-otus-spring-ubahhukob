@@ -30,6 +30,6 @@ public class ChatStateToolkitImpl implements ChatStateToolkit {
         Optional<ChatForPartner> chatForPartnerOptional = chatForPartnerRepository.findById(chat.getPlayer().getId());
         chatForPartnerOptional.ifPresent(chatForPartner -> chatForPartnerRepository.deleteById(chatForPartner.getPartnerId()));
         chatPlayerRepository.deleteById(chat.getChatId());
-        rabbitService.close(chat.getPlayer().getId());
+        rabbitService.closeBattle(chat.getPlayer().getId());
     }
 }

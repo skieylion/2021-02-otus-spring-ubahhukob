@@ -19,13 +19,14 @@ public class RabbitConfig {
     public ConnectionFactory connectionFactory() {
         return new CachingConnectionFactory();//"rabbitmq"
     }
+
     @Bean
-    public RabbitAdmin rabbitAdmin(){
+    public RabbitAdmin rabbitAdmin() {
         return new RabbitAdmin(connectionFactory());
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate    (){
+    public RabbitTemplate rabbitTemplate() {
         return new RabbitTemplate(connectionFactory());
     }
 }

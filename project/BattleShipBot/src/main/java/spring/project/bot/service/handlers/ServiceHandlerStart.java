@@ -1,34 +1,37 @@
 package spring.project.bot.service.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import spring.project.bot.model.MessageBotData;
-import spring.project.bot.service.states.StateService;
+import spring.project.bot.model.DataMessage;
+import spring.project.bot.service.states.*;
 
 @Service
 @AllArgsConstructor
-public class ServiceHandlerStart implements MessageBotHandler{
+public class ServiceHandlerStart implements MessageBotHandler {
 
-    private final StateService stateService;
+    private final ServiceCommandStart serviceCommandStart;
+    private final ServiceCommandJoin serviceCommandJoin;
+    private final CommandExecutor commandExecutor;
 
     @Override
-    public boolean next(MessageBotData messageBotData) throws TelegramApiException, JsonProcessingException {
-        String command=messageBotData.getMessageText();
-        if(command!=null) {
-            boolean isStart=command.indexOf("/start",0)>-1;
-            //boolean isRestart=command.indexOf("/restart",0)>-1;
-            if(isStart){
-                String partnerId=command.replace("/start","").trim();
-                Long chatId=messageBotData.getChatId();
-                if(!partnerId.equals("")){
-                    stateService.getState(chatId).start(chatId,partnerId);
-                } else {
-                    stateService.getState(chatId).start(chatId);
-                }
-                return false;
-            }
+    @SneakyThrows
+    public boolean next(DataMessage dataMessage) {
+        String command = dataMessage.getMessageText();
+        System.out.println(command);
+        if (command == null) return true;
+        boolean isStart = command.indexOf("/start", 0) > -1;
+        String partnerId = command.replace("/start", "").trim();
+
+        if (isStart && (!partnerId.equals(""))) {
+            System.out.println("start part");
+            dataMessage.setPartnerId(partnerId);
+            commandExecutor.execute(serviceCommandJoin, dataMessage);
+            return false;
+        } else if(isStart){
+            System.out.println("start -");
+            commandExecutor.execute(serviceCommandStart, dataMessage);
+            return false;
         }
 
         return true;

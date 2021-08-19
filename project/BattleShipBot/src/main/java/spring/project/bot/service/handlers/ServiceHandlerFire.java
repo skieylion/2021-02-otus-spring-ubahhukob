@@ -1,30 +1,32 @@
 package spring.project.bot.service.handlers;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import spring.project.bot.model.MessageBotData;
-import spring.project.bot.service.states.StateService;
-
-import java.io.IOException;
+import spring.project.bot.model.HiddenSymbol;
+import spring.project.bot.model.DataMessage;
+import spring.project.bot.service.states.CommandExecutor;
+import spring.project.bot.service.states.ServiceCommandFire;
 
 @Service
 @AllArgsConstructor
 public class ServiceHandlerFire implements MessageBotHandler {
 
-    private final StateService stateService;
+    private final ServiceCommandFire serviceCommandFire;
+    private final CommandExecutor commandExecutor;
 
 
     @Override
-    public boolean next(MessageBotData messageBotData) throws TelegramApiException, IOException {
-        String message=messageBotData.getMessageText();
-        Long chatId =messageBotData.getChatId();
-        Integer messageId =messageBotData.getMessageId();
+    @SneakyThrows
+    public boolean next(DataMessage data) {
+        String msg = data.getMessageText();
+        char one = HiddenSymbol.ONE;
+        char zero = HiddenSymbol.ZERO;
 
-        if(message!=null&&(message.indexOf("\u200C",0)>-1||message.indexOf("\u200B",0)>-1)){
-            stateService.getState(chatId).fire(chatId,messageId,message);
-            return false;
+        if (!(msg != null && (msg.indexOf(one, 0) > -1 || msg.indexOf(zero, 0) > -1))) {
+            return true;
         }
-        return true;
+        commandExecutor.execute(serviceCommandFire,data);
+        return false;
     }
 }

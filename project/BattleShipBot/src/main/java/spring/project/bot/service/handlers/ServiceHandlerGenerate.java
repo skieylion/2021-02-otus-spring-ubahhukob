@@ -1,34 +1,33 @@
 package spring.project.bot.service.handlers;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import spring.project.bot.model.MessageBotData;
-import spring.project.bot.service.states.StateService;
-
-import java.io.IOException;
+import spring.project.bot.model.DataMessage;
+import spring.project.bot.service.states.*;
 
 @Service
 @AllArgsConstructor
-public class ServiceHandlerGenerate implements MessageBotHandler{
+public class ServiceHandlerGenerate implements MessageBotHandler {
 
-    private final StateService stateService;
+    private final ServiceCommandGenerate serviceCommandGenerate;
+    private final CommandExecutor commandExecutor;
 
     @Override
-    public boolean next(MessageBotData messageBotData) throws TelegramApiException, IOException {
+    @SneakyThrows
+    public boolean next(DataMessage dataMessage) {
 
-        String command=messageBotData.getMessageText();
-        if(command!=null) {
-
-            boolean isGenerate=command.indexOf("generate",0)>-1;
-            boolean isNew=command.indexOf("new",0)>-1;
-            //команда старт или restart
-            if(isGenerate||isNew) {
-                Long chatId=messageBotData.getChatId();
-                stateService.getState(chatId).generate(chatId);
-                return false;
-            }
+        String command = dataMessage.getMessageText();
+        if (command == null) {
+            return true;
         }
-        return true;
+
+        boolean isGenerate = command.indexOf("generate", 0) > -1;
+        boolean isNew = command.indexOf("new", 0) > -1;
+        if (!(isGenerate || isNew)) {
+            return true;
+        }
+        commandExecutor.execute(serviceCommandGenerate,dataMessage);
+        return false;
     }
 }

@@ -1,8 +1,7 @@
 package spring.project.bot.service;
 
-import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -11,101 +10,130 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import spring.project.common.model.BattleField;
 import spring.project.common.model.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
-@AllArgsConstructor
-public class TelegramServiceImpl implements TelegramService{
+public class TelegramServiceImpl implements TelegramService {
 
-    private final TelegramLongPollingBot telegramLongPollingBot;
     private final BotConverter botConverter;
 
+    public TelegramServiceImpl(BotConverter botConverter) {
+        this.botConverter = botConverter;
+    }
+
+    private Function<Object,Void> action;
+
+    @SneakyThrows
+    private void call(Object object){
+        if(action!=null){
+            action.apply(object);
+        }
+    }
+
     @Override
-    public void sendTextMessageWithoutReplyKeyboardMarkup(Long chatId,String text) throws TelegramApiException {
+    public void setAction(Function<Object,Void> func) {
+        action=func;
+    }
+
+    @Override
+    @SneakyThrows
+    public void sendTextMessageWithoutReplyKeyboardMarkup(Long chatId, String text) {
+        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(text);
-        ReplyKeyboardRemove replyKeyboardRemove=new ReplyKeyboardRemove();
+        ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
         replyKeyboardRemove.setRemoveKeyboard(true);
         sendMessage.setReplyMarkup(replyKeyboardRemove);
-        telegramLongPollingBot.execute(sendMessage);
+        call(sendMessage);
     }
 
     @Override
-    public void sendTextMessage(Long chatId, String text) throws TelegramApiException {
+    @SneakyThrows
+    public void sendTextMessage(Long chatId, String text) {
+        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(text);
-        telegramLongPollingBot.execute(sendMessage);
+        call(sendMessage);
     }
 
     @Override
-    public void sendTextMessageWithKeyboardButtons(Long chatId,String text, List<String> captions) throws TelegramApiException {
+    @SneakyThrows
+    public void sendTextMessageWithKeyboardButtons(Long chatId, String text, List<String> captions) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(text);
-        ReplyKeyboardMarkup replyKeyboardMarkup=new ReplyKeyboardMarkup();
-        List<KeyboardRow> table=new ArrayList<>();
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> table = new ArrayList<>();
 
-        captions.forEach(caption->{
-            KeyboardRow keyboardRow=new KeyboardRow();
+        captions.forEach(caption -> {
+            KeyboardRow keyboardRow = new KeyboardRow();
             keyboardRow.add(new KeyboardButton(caption));
             table.add(keyboardRow);
         });
 
         replyKeyboardMarkup.setKeyboard(table);
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        telegramLongPollingBot.execute(sendMessage);
+        call(sendMessage);
     }
 
     @Override
-    public void sendTextMessageWithReplyKeyboardMarkup(Long chatId, String text, ReplyKeyboardMarkup replyKeyboardMarkup) throws TelegramApiException {
+    @SneakyThrows
+    public void sendTextMessageWithReplyKeyboardMarkup(Long chatId, String text, ReplyKeyboardMarkup replyKeyboardMarkup) {
+        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(text);
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        telegramLongPollingBot.execute(sendMessage);
+        call(sendMessage);
     }
 
     @Override
-    public void sendPhoto(Long chatId, InputFile inputFile) throws TelegramApiException {
-        SendPhoto sendPhoto=new SendPhoto();
+    @SneakyThrows
+    public void sendPhoto(Long chatId, InputFile inputFile) {
+        System.out.println("---");
+        SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(inputFile);
         sendPhoto.setChatId(String.valueOf(chatId));
-        telegramLongPollingBot.execute(sendPhoto);
+        call(sendPhoto);
     }
 
     @Override
-    public void sendBattleField(Long chatId,String text, BattleField battleField) throws TelegramApiException {
+    @SneakyThrows
+    public void sendBattleField(Long chatId, String text, BattleField battleField) {
+        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(text);
-        ReplyKeyboardMarkup replyKeyboardMarkup=new ReplyKeyboardMarkup();
-        List<KeyboardRow> table=new ArrayList<>();
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> table = new ArrayList<>();
 
-        for(int i=0;i<battleField.getRows();i++){
-            KeyboardRow keyboardRow=new KeyboardRow();
-            for(int j=0;j<battleField.getColumns();j++){
-                keyboardRow.add(new KeyboardButton(battleField.getCell(i,j).toString()+botConverter.convertPointToString(new Point(j,i),battleField.getColumns())));
+        for (int i = 0; i < battleField.getRows(); i++) {
+            KeyboardRow keyboardRow = new KeyboardRow();
+            for (int j = 0; j < battleField.getColumns(); j++) {
+                keyboardRow.add(new KeyboardButton(battleField.getCell(i, j).toString() + botConverter.convertPointToString(new Point(j, i), battleField.getColumns())));
             }
             table.add(keyboardRow);
         }
 
         replyKeyboardMarkup.setKeyboard(table);
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        telegramLongPollingBot.execute(sendMessage);
+        call(sendMessage);
     }
 
     @Override
-    public void deleteMessage(Long chatId, Integer messageId) throws TelegramApiException {
-        DeleteMessage deleteMessage=new DeleteMessage();
+    @SneakyThrows
+    public void deleteMessage(Long chatId, Integer messageId) {
+        DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setChatId(String.valueOf(chatId));
         deleteMessage.setMessageId(messageId);
-        telegramLongPollingBot.execute(deleteMessage);
+        call(deleteMessage);
     }
+
 }

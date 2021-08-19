@@ -1,11 +1,7 @@
 package spring.project.bot.service.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import spring.project.bot.model.MessageBotData;
-
-import java.io.IOException;
+import spring.project.bot.model.DataMessage;
 
 public interface MessageBotHandler {
-    boolean next(MessageBotData messageBotData) throws TelegramApiException, IOException;
+    boolean next(DataMessage dataMessage);
 }

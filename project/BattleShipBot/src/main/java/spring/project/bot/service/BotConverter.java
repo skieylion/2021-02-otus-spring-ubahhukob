@@ -10,9 +10,13 @@ import spring.project.common.model.Point;
 import java.io.IOException;
 
 public interface BotConverter {
-    ReplyKeyboardMarkup convert(BattleField battleField) throws JsonProcessingException;
-    InputFile convertToImage(BattleFieldVO battleFieldVO) throws IOException;
+    ReplyKeyboardMarkup convert(BattleField battleField);
+
+    InputFile convertToImage(BattleField battleField);
+
     String convertPointToString(Point point, int sizeColumn);
-    Point convertStringCodeToPoint(String codeString,int sizeColumn);
-    BattleFieldVO convertToBattleFieldVO(BattleField battleField);
+
+    Point convertStringCodeToPoint(String codeString, int sizeColumn);
+
+    BattleField convertToBattleField(BattleFieldVO battleFieldVO);
 }

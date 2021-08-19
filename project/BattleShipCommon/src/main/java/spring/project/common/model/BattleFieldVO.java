@@ -8,5 +8,5 @@ import java.util.List;
 public class BattleFieldVO {
     private int sizeRow;
     private int sizeColumn;
-    List<BattleCell> cells;
+    private List<BattleCell> cells;
 }

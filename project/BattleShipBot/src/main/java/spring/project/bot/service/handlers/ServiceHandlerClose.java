@@ -5,28 +5,27 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import spring.project.bot.model.DataMessage;
 import spring.project.bot.service.states.CommandExecutor;
-import spring.project.bot.service.states.ServiceCommandGo;
+import spring.project.bot.service.states.ServiceCommandClose;
+import spring.project.bot.service.states.ServiceCommandJoin;
+import spring.project.bot.service.states.ServiceCommandStart;
 
 @Service
 @AllArgsConstructor
-public class ServiceHandlerGo implements MessageBotHandler {
+public class ServiceHandlerClose implements MessageBotHandler {
 
-    private final ServiceCommandGo serviceCommandGo;
+    private final ServiceCommandClose serviceCommandClose;
     private final CommandExecutor commandExecutor;
 
     @Override
     @SneakyThrows
     public boolean next(DataMessage dataMessage) {
         String command = dataMessage.getMessageText();
-        if(command==null) {
+        if (command == null) return true;
+        boolean isClose = command.indexOf("/close", 0) > -1;
+        if (!isClose) {
             return true;
         }
-        boolean isGo = command.indexOf("go", 0) > -1;
-        if (!isGo) {
-            return true;
-        }
-        commandExecutor.execute(serviceCommandGo, dataMessage);
-
+        commandExecutor.execute(serviceCommandClose, dataMessage);
         return false;
     }
 }

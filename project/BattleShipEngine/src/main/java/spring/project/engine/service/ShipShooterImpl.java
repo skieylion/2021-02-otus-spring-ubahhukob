@@ -39,7 +39,9 @@ public class ShipShooterImpl implements ShipShooter {
             if (cells.contains(battleField.getCellWithoutBorder(bufferY, bufferX))) {
                 oldX = bufferX;
                 oldY = bufferY;
-            } else break;
+            } else {
+                break;
+            }
         }
         return new Point(oldX, oldY);
     }
@@ -53,7 +55,9 @@ public class ShipShooterImpl implements ShipShooter {
             int bufferY = lastPoint.getY() + directionType.getY() * z;
             if (cells.contains(battleField.getCellWithoutBorder(bufferY, bufferX))) {
                 sizeShip++;
-            } else break;
+            } else {
+                break;
+            }
         }
         return sizeShip;
     }
@@ -69,31 +73,34 @@ public class ShipShooterImpl implements ShipShooter {
         return true;
     }
 
+    private FireResult isWinOrKilled(BattleField battleField){
+        int size = battleField.getListIndexesByCellType(CellType.FULL).size();
+        if (size > 0) return FireResult.KILLED;
+        else return FireResult.WIN;
+    }
+
+    private boolean checkWinOrKilled(BattleField battleField,Point point,DirectionType directionType){
+        Point lastPoint = getLastPoint(battleField, point, directionType);
+        int sizeShip = getSizeShipByLastPointAndDirection(battleField, lastPoint, directionType.getReverseDirection());
+        return isKilledShip(battleField, new Ship(sizeShip, lastPoint, directionType.getReverseDirection()));
+    }
+
     @Override
     public FireResult fire(BattleField battleField, Point point) {
         int x = point.getX();
         int y = point.getY();
-        //System.out.println(x);
-        //System.out.println(battleField);
         if (battleField.checkBorder(x, y)) {
             CellType cell = battleField.getCell(y, x);
             if (cell == CellType.FULL) {
                 battleField.setCell(y, x, CellType.DAMAGE);
                 DirectionType directionType = findDirectionShipByPoint(battleField, x, y);
-                if (directionType == DirectionType.ZERO) {
-                    int size = battleField.getListIndexesByCellType(CellType.FULL).size();
-                    if (size > 0) return FireResult.KILLED;
-                    else return FireResult.WIN;
-                } else {
-                    Point lastPoint = getLastPoint(battleField, new Point(x, y), directionType);
-                    int sizeShip = getSizeShipByLastPointAndDirection(battleField, lastPoint, directionType.getReverseDirection());
-                    if (isKilledShip(battleField, new Ship(sizeShip, lastPoint, directionType.getReverseDirection()))) {
-                        int size = battleField.getListIndexesByCellType(CellType.FULL).size();
-                        if (size > 0) return FireResult.KILLED;
-                        else return FireResult.WIN;
-                    }
-                    return FireResult.HIT;
+
+                if (directionType == DirectionType.ZERO||checkWinOrKilled(battleField,point,directionType)) {
+                    return isWinOrKilled(battleField);
                 }
+
+                return FireResult.HIT;
+
             } else if (cell == CellType.VOID) {
                 battleField.setCell(y, x, CellType.MISS);
             }

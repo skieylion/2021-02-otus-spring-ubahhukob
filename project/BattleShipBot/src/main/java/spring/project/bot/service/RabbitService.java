@@ -6,9 +6,13 @@ import spring.project.common.model.Player;
 import spring.project.common.model.Point;
 
 public interface RabbitService {
-    Player start() throws JsonProcessingException;
-    Player join(String playerId) throws JsonProcessingException;
-    Player generate(String playerId) throws JsonProcessingException;
-    FireResponse fire(String playerId, Point point) throws JsonProcessingException;
-    void close(String playerId);
+    Player startBattle();
+
+    Player joinToBattle(String playerId);
+
+    Player generateField(String playerId);
+
+    FireResponse fireOnShip(String playerId, Point point);
+
+    void closeBattle(String playerId);
 }

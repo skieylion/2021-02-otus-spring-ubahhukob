@@ -1,8 +1,8 @@
 package spring.project.bot.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import gui.ava.html.image.generator.HtmlImageGenerator;
-import org.apache.commons.lang3.RandomStringUtils;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -13,71 +13,74 @@ import spring.project.common.model.*;
 import spring.project.common.model.Point;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
-public class BotConverterImpl implements BotConverter{
+public class BotConverterImpl implements BotConverter {
+
+    @Autowired
+    ResourceLoader resourceLoader;
+
+
+    @SneakyThrows
+    private BufferedImage getImage(String name) {
+        InputStream cellPicRed = Objects.requireNonNull(resourceLoader.getClassLoader()).getResourceAsStream(name);
+        return ImageIO.read(Objects.requireNonNull(cellPicRed));
+    }
 
     @Override
-    public String convertPointToString(Point point, int sizeColumn){
-        int i=point.getY();
-        int j=point.getX();
-        int code=i*sizeColumn+j;
+    public String convertPointToString(Point point, int sizeColumn) {
+        int i = point.getY();
+        int j = point.getX();
+        int code = i * sizeColumn + j;
         String bin = Integer.toBinaryString(code);
-        bin=bin.replaceAll("1","\u200C");
-        bin=bin.replaceAll("0","\u200B");
+        bin = bin.replaceAll("1", String.valueOf(HiddenSymbol.ONE));
+        bin = bin.replaceAll("0", String.valueOf(HiddenSymbol.ZERO));
         return bin;
     }
 
     @Override
-    public Point convertStringCodeToPoint(String codeString,int sizeColumn){
-        codeString=codeString.replaceAll("\u200C","1");
-        codeString=codeString.replaceAll("\u200B","0");
-        String binaryString=codeString;
-        int code=Integer.parseInt(binaryString,2);
-        int j=code % sizeColumn;
-        int i=(code-j)/sizeColumn;
+    public Point convertStringCodeToPoint(String codeString, int sizeColumn) {
+        codeString = codeString.replaceAll(String.valueOf(HiddenSymbol.ONE), "1");
+        codeString = codeString.replaceAll(String.valueOf(HiddenSymbol.ZERO), "0");
+        String binaryString = codeString;
+        int code = Integer.parseInt(binaryString, 2);
+        int j = code % sizeColumn;
+        int i = (code - j) / sizeColumn;
 
-        return new Point(j,i);
+        return new Point(j, i);
     }
 
     @Override
-    public BattleFieldVO convertToBattleFieldVO(BattleField battleField) {
-        BattleFieldVO battleFieldVO=new BattleFieldVO();
-        battleFieldVO.setSizeRow(battleField.getRows());
-        battleFieldVO.setSizeColumn(battleField.getColumns());
-        List<BattleCell> cells=new ArrayList<>();
-        for(int i=0;i<battleField.getRows();i++){
-            for(int j=0;j<battleField.getColumns();j++){
-                BattleCell battleCell=new BattleCell();
-                CellType cellType=battleField.getCell(i,j);
-                battleCell.setPoint(new Point(j,i));
-                battleCell.setCell(cellType);
-                cells.add(battleCell);
-            }
-        }
-        battleFieldVO.setCells(cells);
+    public BattleField convertToBattleField(BattleFieldVO battleFieldVO) {
+        BattleField battleField = new BattleField(battleFieldVO.getSizeRow(), battleFieldVO.getSizeColumn());
+        List<BattleCell> cells = battleFieldVO.getCells();
 
-        return battleFieldVO;
+        battleFieldVO.getCells().forEach(battleCell -> {
+            battleField.setCell(battleCell.getPoint().getY(), battleCell.getPoint().getX(), battleCell.getCell());
+        });
+        return battleField;
     }
 
     @Override
-    public ReplyKeyboardMarkup convert(BattleField battleField) throws JsonProcessingException {
+    public ReplyKeyboardMarkup convert(BattleField battleField) {
 
-        int rows=battleField.getRows();
-        int columns=battleField.getColumns();
-        ReplyKeyboardMarkup replyKeyboardMarkup=new ReplyKeyboardMarkup();
-        List<KeyboardRow> table=new ArrayList<>();
+        int rows = battleField.getRows();
+        int columns = battleField.getColumns();
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> table = new ArrayList<>();
 
-        for(int i=0;i<rows;i++){
-            KeyboardRow keyboardRow=new KeyboardRow();
-            for(int j=0;j<columns;j++){
-                KeyboardButton keyboardButton=new KeyboardButton(battleField.getCell(i,j).toString()+convertPointToString(new Point(j,i),columns));
+        for (int i = 0; i < rows; i++) {
+            KeyboardRow keyboardRow = new KeyboardRow();
+            for (int j = 0; j < columns; j++) {
+                KeyboardButton keyboardButton = new KeyboardButton(battleField.getCell(i, j).toString() + convertPointToString(new Point(j, i), columns));
                 keyboardRow.add(keyboardButton);
             }
             table.add(keyboardRow);
@@ -88,34 +91,49 @@ public class BotConverterImpl implements BotConverter{
     }
 
     @Override
-    public InputFile convertToImage(BattleFieldVO battleFieldVO) throws IOException {
-        BattleField battleField=new BattleField(battleFieldVO.getSizeRow(),battleFieldVO.getSizeColumn());
-        battleFieldVO.getCells().forEach(battleCell->{
-            battleField.setCell(battleCell.getPoint().getY(),battleCell.getPoint().getX(),battleCell.getCell());
-        });
-        StringBuilder html=new StringBuilder();
-        html.append("<table >");
-        for(int i=0;i<battleField.getRows();i++){
-            html.append("<tr style='line-height: 5px;'>");
-            for(int j=0;j<battleField.getColumns();j++){
-                html.append("<td style='width:10px;height:10px; border: 1px solid black; background-color:white; color:black; text-align:center;'>");
-                html.append(battleField.getCell(i,j));
-                html.append("</td>");
+    @SneakyThrows
+    public InputFile convertToImage(BattleField battleField) {
+        BufferedImage cellRed = getImage("redsquare.png");
+        BufferedImage cellPoint = getImage("point.png");
+        BufferedImage cellShip = getImage("full.png");
+        BufferedImage cell = getImage("square.png");
+        int cellWidth = cell.getWidth();
+        int cellHeight = cell.getHeight();
+        int countCellWidth = battleField.getColumns();
+        int countCellHeight = battleField.getRows();
+        int width = cellWidth * countCellWidth;
+        int height = cellHeight * countCellHeight;
+
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D graphics2D = bufferedImage.createGraphics();
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.fillRect(0, 0, width, height);
+
+        for (int i = 0; i < battleField.getRows(); i++) {
+            for (int j = 0; j < battleField.getColumns(); j++) {
+                int coordX = j * cellWidth;
+                int coordY = i * cellHeight;
+                CellType cellType = battleField.getCell(i, j);
+                BufferedImage img = cell;
+                if (CellType.FULL.equals(cellType)) {
+                    img = cellShip;
+                } else if (CellType.MISS.equals(cellType)) {
+                    img = cellPoint;
+                } else if (CellType.DAMAGE.equals(cellType)) {
+                    img = cellRed;
+                }
+                graphics2D.drawImage(img, coordX, coordY, null);
             }
-            html.append("</tr>");
         }
-        html.append("</td>");
 
-        HtmlImageGenerator htmlImageGenerator=new HtmlImageGenerator();
-        htmlImageGenerator.loadHtml(html.toString());
-        BufferedImage bufferedImage=htmlImageGenerator.getBufferedImage();
 
-        String name=RandomStringUtils.random(10,"BCDFGHJLKMNPQRSTVWXZ123456789")+".png";
-        File file = File.createTempFile("field-",".png");
-        ImageIO.write(bufferedImage,"png",file);
-        InputFile inputFile=new InputFile();
-        inputFile.setMedia(new FileInputStream(file),file.getName());
+        File file = File.createTempFile("field-", ".png");
+        ImageIO.write(bufferedImage, "png", file);
+        InputFile inputFile = new InputFile();
+        inputFile.setMedia(new FileInputStream(file), file.getName());
         file.deleteOnExit();
+
         return inputFile;
     }
 }

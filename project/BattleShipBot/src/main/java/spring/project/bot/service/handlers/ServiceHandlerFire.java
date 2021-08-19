@@ -5,8 +5,8 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import spring.project.bot.model.HiddenSymbol;
 import spring.project.bot.model.DataMessage;
-import spring.project.bot.service.states.CommandExecutor;
-import spring.project.bot.service.states.ServiceCommandFire;
+import spring.project.bot.service.commands.CommandExecutor;
+import spring.project.bot.service.commands.ServiceCommandFire;
 
 @Service
 @AllArgsConstructor

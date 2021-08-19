@@ -18,7 +18,6 @@ public class BattleFieldGeneratorImpl implements BattleFieldGenerator {
 
     @Override
     public PlayerDB generate10(String playerId) throws PositionShipNotFoundException {
-        System.out.println(playerId);
         PlayerDB playerDB =battleFieldRepository.findById(playerId).orElseThrow();
         int size = 10;
         BattleField battleField=battleFieldBuilder.create(size,size);

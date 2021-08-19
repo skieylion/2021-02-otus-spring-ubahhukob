@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import spring.project.bot.model.DataMessage;
-import spring.project.bot.service.states.*;
+import spring.project.bot.model.UserCommand;
+import spring.project.bot.service.commands.*;
 
 @Service
 @AllArgsConstructor
@@ -22,8 +23,8 @@ public class ServiceHandlerGenerate implements MessageBotHandler {
             return true;
         }
 
-        boolean isGenerate = command.indexOf("generate", 0) > -1;
-        boolean isNew = command.indexOf("new", 0) > -1;
+        boolean isGenerate = command.indexOf(UserCommand.GENERATE, 0) > -1;
+        boolean isNew = command.indexOf(UserCommand.NEW, 0) > -1;
         if (!(isGenerate || isNew)) {
             return true;
         }

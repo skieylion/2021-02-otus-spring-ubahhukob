@@ -1,10 +1,8 @@
-package spring.project.bot.service.states;
+package spring.project.bot.service.commands;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import spring.project.bot.model.Chat;
-import spring.project.bot.model.ChatState;
-import spring.project.bot.model.DataMessage;
+import spring.project.bot.model.*;
 import spring.project.bot.repository.ChatPlayerRepository;
 import spring.project.bot.service.RabbitService;
 import spring.project.bot.service.TelegramService;
@@ -35,7 +33,7 @@ public class ServiceCommandJoin implements Command {
         chat.setChatId(chatId);
         chat.setChatState(ChatState.CONFIG);
         chatPlayerRepository.save(chat);
-        telegramService.sendTextMessageWithKeyboardButtons(chatId, "Nice. You are joined to the game. Next generate a new field", Collections.singletonList("generate"));
+        telegramService.sendTextMessageWithKeyboardButtons(chatId, UserMessage.JOIN, Collections.singletonList(UserCommand.GENERATE));
     }
 
     @Override
@@ -52,9 +50,9 @@ public class ServiceCommandJoin implements Command {
             if (partnerId.equals(player.getId())) {
                 joinTo(chatId, partnerId);
             } else if (partnerId.equals(player.getEnemyId())) {
-                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, "Sorry. The link is for your partner");
+                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.LINK_PARTNER);
             } else {
-                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, "Sorry. The bot don't know the link");
+                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.NO_LINK);
             }
         }
     }

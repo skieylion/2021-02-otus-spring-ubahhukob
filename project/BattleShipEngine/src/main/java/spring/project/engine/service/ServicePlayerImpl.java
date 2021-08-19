@@ -38,8 +38,6 @@ public class ServicePlayerImpl implements ServicePlayer {
 
     @Override
     public FireResponse fire(String playerId, int x, int y) {
-        System.out.println(playerId);
-        //System.out.println(playerId);
         PlayerDB playerDB =battleFieldRepository.findById(playerId).orElseThrow();
         String enemyId= playerDB.getEnemyId();
         PlayerDB enemy=battleFieldRepository.findById(enemyId).orElseThrow();

@@ -1,18 +1,13 @@
-package spring.project.bot.service.states;
+package spring.project.bot.service.commands;
 
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import spring.project.bot.exception.EntityNotFoundException;
 import spring.project.bot.model.*;
-import spring.project.bot.repository.ChatForPartnerRepository;
 import spring.project.bot.repository.ChatPlayerRepository;
-import spring.project.bot.service.BotConverter;
 import spring.project.bot.service.RabbitService;
 import spring.project.bot.service.TelegramService;
-import spring.project.common.model.*;
+import spring.project.common.model.Player;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,8 +35,8 @@ public class ServiceCommandStart implements Command {
         chat.setChatState(ChatState.CONFIG);
         chatPlayerRepository.save(chat);
         rabbitService.joinToBattle(player.getId());
-        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, "Hello. Give this link your partner");
+        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.HELLO);
         String url = "https://t.me/XXXmeIxBot?start=" + player.getEnemyId();
-        telegramService.sendTextMessageWithKeyboardButtons(chatId, url, Collections.singletonList("generate"));
+        telegramService.sendTextMessageWithKeyboardButtons(chatId, url, Collections.singletonList(UserCommand.GENERATE));
     }
 }

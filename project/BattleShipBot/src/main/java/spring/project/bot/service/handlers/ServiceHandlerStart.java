@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import spring.project.bot.model.DataMessage;
-import spring.project.bot.service.states.*;
+import spring.project.bot.model.UserCommand;
+import spring.project.bot.service.commands.*;
 
 @Service
 @AllArgsConstructor
@@ -18,18 +19,15 @@ public class ServiceHandlerStart implements MessageBotHandler {
     @SneakyThrows
     public boolean next(DataMessage dataMessage) {
         String command = dataMessage.getMessageText();
-        System.out.println(command);
         if (command == null) return true;
-        boolean isStart = command.indexOf("/start", 0) > -1;
-        String partnerId = command.replace("/start", "").trim();
+        boolean isStart = command.indexOf(UserCommand.START, 0) > -1;
+        String partnerId = command.replace(UserCommand.START, "").trim();
 
         if (isStart && (!partnerId.equals(""))) {
-            System.out.println("start part");
             dataMessage.setPartnerId(partnerId);
             commandExecutor.execute(serviceCommandJoin, dataMessage);
             return false;
         } else if(isStart){
-            System.out.println("start -");
             commandExecutor.execute(serviceCommandStart, dataMessage);
             return false;
         }

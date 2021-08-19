@@ -1,12 +1,9 @@
-package spring.project.bot.service.states;
+package spring.project.bot.service.commands;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import spring.project.bot.model.Chat;
-import spring.project.bot.model.ChatState;
-import spring.project.bot.model.DataMessage;
-import spring.project.bot.repository.ChatForPartnerRepository;
+import spring.project.bot.model.*;
 import spring.project.bot.repository.ChatPlayerRepository;
 import spring.project.bot.service.BotConverter;
 import spring.project.bot.service.RabbitService;
@@ -39,11 +36,10 @@ public class ServiceCommandGenerate implements Command {
         Chat chat = chatPlayerRepository.findById(chatId).orElseThrow();
         Player player = chat.getPlayer();
         player = rabbitService.generateField(player.getId());
-        System.out.println(botConverter.convertToBattleField(player.getField()).toString());
         chat.setPlayer(player);
         chatPlayerRepository.save(chat);
         InputFile inputFile = botConverter.convertToImage(botConverter.convertToBattleField(player.getField()));
         telegramService.sendPhoto(chatId, inputFile);
-        telegramService.sendTextMessageWithKeyboardButtons(chatId, "it's your field", Arrays.asList("go", "new"));
+        telegramService.sendTextMessageWithKeyboardButtons(chatId, UserMessage.YOUR_FIELD, Arrays.asList(UserCommand.GO, UserCommand.NEW));
     }
 }

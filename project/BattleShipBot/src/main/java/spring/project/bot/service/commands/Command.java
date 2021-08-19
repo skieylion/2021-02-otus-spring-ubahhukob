@@ -1,4 +1,4 @@
-package spring.project.bot.service.states;
+package spring.project.bot.service.commands;
 
 import spring.project.bot.model.ChatState;
 import spring.project.bot.model.DataMessage;

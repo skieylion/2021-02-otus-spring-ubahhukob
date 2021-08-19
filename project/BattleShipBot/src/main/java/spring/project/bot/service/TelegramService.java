@@ -25,4 +25,6 @@ public interface TelegramService {
     void deleteMessage(Long chatId, Integer messageId);
 
     void setAction(Function<Object,Void> func);
+
+    void setLocale(String locale);
 }

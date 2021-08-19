@@ -1,6 +1,8 @@
 package spring.project.bot.service;
 
 import lombok.SneakyThrows;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -15,15 +17,20 @@ import spring.project.common.model.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 @Service
 public class TelegramServiceImpl implements TelegramService {
 
     private final BotConverter botConverter;
+    private final MessageSource messageSource;
 
-    public TelegramServiceImpl(BotConverter botConverter) {
+    private String locale="ru-RU";
+
+    public TelegramServiceImpl(BotConverter botConverter, MessageSource messageSource) {
         this.botConverter = botConverter;
+        this.messageSource = messageSource;
     }
 
     private Function<Object,Void> action;
@@ -41,12 +48,24 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @Override
+    public void setLocale(String locale) {
+        this.locale=locale;
+    }
+
+    private String locale(String text){
+        try {
+            return messageSource.getMessage(text, null, Locale.forLanguageTag(locale));
+        } catch (NoSuchMessageException exception){
+            return text;
+        }
+    }
+
+    @Override
     @SneakyThrows
     public void sendTextMessageWithoutReplyKeyboardMarkup(Long chatId, String text) {
-        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(text);
+        sendMessage.setText(locale(text));
         ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
         replyKeyboardRemove.setRemoveKeyboard(true);
         sendMessage.setReplyMarkup(replyKeyboardRemove);
@@ -56,10 +75,9 @@ public class TelegramServiceImpl implements TelegramService {
     @Override
     @SneakyThrows
     public void sendTextMessage(Long chatId, String text) {
-        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(text);
+        sendMessage.setText(locale(text));
         call(sendMessage);
     }
 
@@ -68,7 +86,7 @@ public class TelegramServiceImpl implements TelegramService {
     public void sendTextMessageWithKeyboardButtons(Long chatId, String text, List<String> captions) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(text);
+        sendMessage.setText(locale(text));
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> table = new ArrayList<>();
 
@@ -86,10 +104,9 @@ public class TelegramServiceImpl implements TelegramService {
     @Override
     @SneakyThrows
     public void sendTextMessageWithReplyKeyboardMarkup(Long chatId, String text, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(text);
+        sendMessage.setText(locale(text));
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         call(sendMessage);
     }
@@ -97,7 +114,6 @@ public class TelegramServiceImpl implements TelegramService {
     @Override
     @SneakyThrows
     public void sendPhoto(Long chatId, InputFile inputFile) {
-        System.out.println("---");
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(inputFile);
         sendPhoto.setChatId(String.valueOf(chatId));
@@ -107,10 +123,9 @@ public class TelegramServiceImpl implements TelegramService {
     @Override
     @SneakyThrows
     public void sendBattleField(Long chatId, String text, BattleField battleField) {
-        System.out.println("---");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(text);
+        sendMessage.setText(locale(text));
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> table = new ArrayList<>();
 

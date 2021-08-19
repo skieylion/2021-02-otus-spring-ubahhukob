@@ -1,4 +1,4 @@
-package spring.project.bot.service.states;
+package spring.project.bot.service.commands;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -7,12 +7,13 @@ import spring.project.bot.model.DataMessage;
 import spring.project.bot.model.UserCommand;
 import spring.project.bot.service.commands.CommandExecutor;
 import spring.project.bot.service.commands.ServiceCommandGo;
+import spring.project.bot.service.commands.ServiceCommandLanguage;
 
 @Service
 @AllArgsConstructor
-public class ServiceHandlerGo implements MessageBotHandler {
+public class ServiceHandlerLanguage implements MessageBotHandler {
 
-    private final ServiceCommandGo serviceCommandGo;
+    private final ServiceCommandLanguage serviceCommandLanguage;
     private final CommandExecutor commandExecutor;
 
     @Override
@@ -22,11 +23,11 @@ public class ServiceHandlerGo implements MessageBotHandler {
         if(command==null) {
             return true;
         }
-        boolean isGo = command.indexOf(UserCommand.GO, 0) > -1;
-        if (!isGo) {
+        boolean isLanguage = UserCommand.LANGUAGES.contains(command);
+        if (!isLanguage) {
             return true;
         }
-        commandExecutor.execute(serviceCommandGo, dataMessage);
+        commandExecutor.execute(serviceCommandLanguage, dataMessage);
 
         return false;
     }

@@ -1,4 +1,4 @@
-package spring.project.bot.service.states;
+package spring.project.bot.service.commands;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -57,9 +57,9 @@ public class ServiceCommandFire implements Command {
     @Override
     @SneakyThrows
     public void execute(DataMessage data) {
-        Long chatId=data.getChatId();
-        Integer messageId=data.getMessageId();
-        String messageText=data.getMessageText();
+        Long chatId = data.getChatId();
+        Integer messageId = data.getMessageId();
+        String messageText = data.getMessageText();
 
         telegramService.deleteMessage(chatId, messageId);
         String code = extractCommand(messageText);
@@ -71,22 +71,22 @@ public class ServiceCommandFire implements Command {
 
         ChatForPartner chatEnemy = chatForPartnerRepository.findById(chat.getPlayer().getEnemyId()).orElseThrow(EntityNotFoundException::new);
         if (FireResult.HIT.equals(result) || FireResult.KILLED.equals(result)) {
-            String answerToEnemy = FireResult.HIT.equals(result) ? "Partner hit to your ship" : "Partner killed your ship";
-            String answerToMe = FireResult.HIT.equals(result) ? "You hit to partner's ship" : "You killed partner's ship";
+            String answerToEnemy = FireResult.HIT.equals(result) ? UserMessage.PARTNER_HIT : UserMessage.PARTNER_KILLED;
+            String answerToMe = FireResult.HIT.equals(result) ? UserMessage.YOU_HIT : UserMessage.YOU_KILLED;
             telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatEnemy.getChatId(), answerToEnemy);
             BattleField battleField = fireResponse.getEnemyField();
             telegramService.sendBattleField(chatId, answerToMe, battleField);
             telegramService.sendPhoto(chatEnemy.getChatId(), botConverter.convertToImage(battleField));
         } else if (FireResult.WIN.equals(result)) {
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatEnemy.getChatId(), "Game over. Your partner is winner");
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, "That is great! You are winner");
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatEnemy.getChatId(), UserMessage.GAME_OVER);
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.WINNER);
             chatStateToolkit.deleteAll(chatId);
             chatStateToolkit.deleteAll(chatEnemy.getChatId());
         } else {
             chatStateToolkit.update(chatId, ChatState.WAIT);
             chatStateToolkit.update(chatEnemy.getChatId(), ChatState.PLAY);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, "You have missed. Next a turn is for partner");
-            telegramService.sendBattleField(chatEnemy.getChatId(), "It's your turn", convertEnemyField(fireResponse.getField()));
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.YOU_MISSED);
+            telegramService.sendBattleField(chatEnemy.getChatId(), UserMessage.YOUR_TURN, convertEnemyField(fireResponse.getField()));
         }
     }
 }

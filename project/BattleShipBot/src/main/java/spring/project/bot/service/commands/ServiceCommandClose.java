@@ -1,17 +1,12 @@
-package spring.project.bot.service.states;
+package spring.project.bot.service.commands;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import spring.project.bot.model.Chat;
-import spring.project.bot.model.ChatForPartner;
 import spring.project.bot.model.ChatState;
 import spring.project.bot.model.DataMessage;
-import spring.project.bot.repository.ChatForPartnerRepository;
-import spring.project.bot.repository.ChatPlayerRepository;
-import spring.project.bot.service.TelegramService;
-import spring.project.common.model.BattleField;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @AllArgsConstructor

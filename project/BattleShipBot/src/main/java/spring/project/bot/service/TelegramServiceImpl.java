@@ -1,6 +1,7 @@
 package spring.project.bot.service;
 
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,16 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import spring.project.bot.exception.EntityNotFoundException;
+import spring.project.bot.model.UserSettings;
+import spring.project.bot.repository.UserSettingsRepository;
 import spring.project.common.model.BattleField;
 import spring.project.common.model.Point;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -25,12 +30,19 @@ public class TelegramServiceImpl implements TelegramService {
 
     private final BotConverter botConverter;
     private final MessageSource messageSource;
+    private final UserSettingsRepository userSettingsRepository;
+    private final String localeDefault;
 
-    private String locale="ru-RU";
-
-    public TelegramServiceImpl(BotConverter botConverter, MessageSource messageSource) {
+    public TelegramServiceImpl(
+            BotConverter botConverter,
+            MessageSource messageSource,
+            UserSettingsRepository userSettingsRepository,
+            @Value("${localeDefault}") String localeDefault
+    ) {
         this.botConverter = botConverter;
         this.messageSource = messageSource;
+        this.userSettingsRepository = userSettingsRepository;
+        this.localeDefault = localeDefault;
     }
 
     private Function<Object,Void> action;
@@ -47,14 +59,19 @@ public class TelegramServiceImpl implements TelegramService {
         action=func;
     }
 
-    @Override
-    public void setLocale(String locale) {
-        this.locale=locale;
+    private String getLocale(Integer userId){
+        String locale=localeDefault;
+        Optional<UserSettings> userSettingsOptional = userSettingsRepository.findById(userId);
+        if(userSettingsOptional.isPresent()){
+            locale=userSettingsOptional.get().getLocale();
+        }
+        locale=(locale==null|| locale.equals(""))?localeDefault:locale;
+        return locale;
     }
 
-    private String locale(String text){
+    private String locale(Integer userId,String text){
         try {
-            return messageSource.getMessage(text, null, Locale.forLanguageTag(locale));
+            return messageSource.getMessage(text, null, Locale.forLanguageTag(getLocale(userId)));
         } catch (NoSuchMessageException exception){
             return text;
         }
@@ -62,10 +79,10 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     @SneakyThrows
-    public void sendTextMessageWithoutReplyKeyboardMarkup(Long chatId, String text) {
+    public void sendTextMessageWithoutReplyKeyboardMarkup(Integer userId,Long chatId, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(locale(text));
+        sendMessage.setText(locale(userId,text));
         ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
         replyKeyboardRemove.setRemoveKeyboard(true);
         sendMessage.setReplyMarkup(replyKeyboardRemove);
@@ -74,19 +91,19 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     @SneakyThrows
-    public void sendTextMessage(Long chatId, String text) {
+    public void sendTextMessage(Integer userId,Long chatId, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(locale(text));
+        sendMessage.setText(locale(userId,text));
         call(sendMessage);
     }
 
     @Override
     @SneakyThrows
-    public void sendTextMessageWithKeyboardButtons(Long chatId, String text, List<String> captions) {
+    public void sendTextMessageWithKeyboardButtons(Integer userId,Long chatId, String text, List<String> captions) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(locale(text));
+        sendMessage.setText(locale(userId,text));
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> table = new ArrayList<>();
 
@@ -103,17 +120,17 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     @SneakyThrows
-    public void sendTextMessageWithReplyKeyboardMarkup(Long chatId, String text, ReplyKeyboardMarkup replyKeyboardMarkup) {
+    public void sendTextMessageWithReplyKeyboardMarkup(Integer userId,Long chatId, String text, ReplyKeyboardMarkup replyKeyboardMarkup) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(locale(text));
+        sendMessage.setText(locale(userId,text));
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         call(sendMessage);
     }
 
     @Override
     @SneakyThrows
-    public void sendPhoto(Long chatId, InputFile inputFile) {
+    public void sendPhoto(Integer userId,Long chatId, InputFile inputFile) {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(inputFile);
         sendPhoto.setChatId(String.valueOf(chatId));
@@ -122,10 +139,10 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     @SneakyThrows
-    public void sendBattleField(Long chatId, String text, BattleField battleField) {
+    public void sendBattleField(Integer userId,Long chatId, String text, BattleField battleField) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(locale(text));
+        sendMessage.setText(locale(userId,text));
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> table = new ArrayList<>();
 
@@ -144,7 +161,7 @@ public class TelegramServiceImpl implements TelegramService {
 
     @Override
     @SneakyThrows
-    public void deleteMessage(Long chatId, Integer messageId) {
+    public void deleteMessage(Integer userId,Long chatId, Integer messageId) {
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setChatId(String.valueOf(chatId));
         deleteMessage.setMessageId(messageId);

@@ -1,3 +1,4 @@
+localeDefault: ru-RU
 spring:
   messages:
     basename: i18n/messages/messages

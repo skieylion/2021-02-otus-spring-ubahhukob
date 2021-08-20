@@ -26,33 +26,34 @@ public class ServiceCommandJoin implements Command {
         return states;
     }
 
-    private void joinTo(Long chatId, String partnerId) {
+    private void joinTo(Integer userId,Long chatId, String partnerId) {
         Player player = rabbitService.joinToBattle(partnerId);
         Chat chat = new Chat();
         chat.setPlayer(player);
         chat.setChatId(chatId);
         chat.setChatState(ChatState.CONFIG);
         chatPlayerRepository.save(chat);
-        telegramService.sendTextMessageWithKeyboardButtons(chatId, UserMessage.JOIN, Collections.singletonList(UserCommand.GENERATE));
+        telegramService.sendTextMessageWithKeyboardButtons(userId,chatId, UserMessage.JOIN, Collections.singletonList(UserCommand.GENERATE));
     }
 
     @Override
     public void execute(DataMessage data) {
         Long chatId=data.getChatId();
         String partnerId=data.getPartnerId();
+        Integer userId=data.getUserId();
 
         Optional<Chat> chatOptional = chatPlayerRepository.findById(chatId);
         if (chatOptional.isEmpty()) {
-            joinTo(chatId, partnerId);
+            joinTo(userId,chatId, partnerId);
         } else {
             Chat chat = chatOptional.get();
             Player player = chat.getPlayer();
             if (partnerId.equals(player.getId())) {
-                joinTo(chatId, partnerId);
+                joinTo(userId,chatId, partnerId);
             } else if (partnerId.equals(player.getEnemyId())) {
-                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.LINK_PARTNER);
+                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.LINK_PARTNER);
             } else {
-                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.NO_LINK);
+                telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.NO_LINK);
             }
         }
     }

@@ -28,6 +28,7 @@ public class ServiceCommandStart implements Command {
     @Override
     public void execute(DataMessage data) {
         Long chatId=data.getChatId();
+        Integer userId=data.getUserId();
         Player player = rabbitService.startBattle();
         Chat chat = new Chat();
         chat.setPlayer(player);
@@ -35,8 +36,8 @@ public class ServiceCommandStart implements Command {
         chat.setChatState(ChatState.CONFIG);
         chatPlayerRepository.save(chat);
         rabbitService.joinToBattle(player.getId());
-        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.HELLO);
+        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.HELLO);
         String url = "https://t.me/XXXmeIxBot?start=" + player.getEnemyId();
-        telegramService.sendTextMessageWithKeyboardButtons(chatId, url, Collections.singletonList(UserCommand.GENERATE));
+        telegramService.sendTextMessageWithKeyboardButtons(userId,chatId, url, Collections.singletonList(UserCommand.GENERATE));
     }
 }

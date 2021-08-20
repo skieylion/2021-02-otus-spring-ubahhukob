@@ -33,13 +33,14 @@ public class ServiceCommandGenerate implements Command {
     @Override
     public void execute(DataMessage data) {
         Long chatId=data.getChatId();
+        Integer userId=data.getUserId();
         Chat chat = chatPlayerRepository.findById(chatId).orElseThrow();
         Player player = chat.getPlayer();
         player = rabbitService.generateField(player.getId());
         chat.setPlayer(player);
         chatPlayerRepository.save(chat);
         InputFile inputFile = botConverter.convertToImage(botConverter.convertToBattleField(player.getField()));
-        telegramService.sendPhoto(chatId, inputFile);
-        telegramService.sendTextMessageWithKeyboardButtons(chatId, UserMessage.YOUR_FIELD, Arrays.asList(UserCommand.GO, UserCommand.NEW));
+        telegramService.sendPhoto(userId,chatId, inputFile);
+        telegramService.sendTextMessageWithKeyboardButtons(userId,chatId, UserMessage.YOUR_FIELD, Arrays.asList(UserCommand.GO, UserCommand.NEW));
     }
 }

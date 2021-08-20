@@ -10,21 +10,19 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 public interface TelegramService {
-    void sendTextMessageWithoutReplyKeyboardMarkup(Long chatId, String text);
+    void sendTextMessageWithoutReplyKeyboardMarkup(Integer userId,Long chatId, String text);
 
-    void sendTextMessage(Long chatId, String text);
+    void sendTextMessage(Integer userId,Long chatId, String text);
 
-    void sendTextMessageWithKeyboardButtons(Long chatId, String text, List<String> captions);
+    void sendTextMessageWithKeyboardButtons(Integer userId,Long chatId, String text, List<String> captions);
 
-    void sendTextMessageWithReplyKeyboardMarkup(Long chatId, String text, ReplyKeyboardMarkup replyKeyboardMarkup);
+    void sendTextMessageWithReplyKeyboardMarkup(Integer userId,Long chatId, String text, ReplyKeyboardMarkup replyKeyboardMarkup);
 
-    void sendPhoto(Long chatId, InputFile inputFile);
+    void sendPhoto(Integer userId,Long chatId, InputFile inputFile);
 
-    void sendBattleField(Long chatId, String text, BattleField battleField);
+    void sendBattleField(Integer userId,Long chatId, String text, BattleField battleField);
 
-    void deleteMessage(Long chatId, Integer messageId);
+    void deleteMessage(Integer userId,Long chatId, Integer messageId);
 
     void setAction(Function<Object,Void> func);
-
-    void setLocale(String locale);
 }

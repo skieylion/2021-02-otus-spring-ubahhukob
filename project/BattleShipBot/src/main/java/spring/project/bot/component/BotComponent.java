@@ -75,6 +75,7 @@ public class BotComponent extends TelegramLongPollingBot {
         dataMessage.setMessageId(update.getMessage().getMessageId());
         dataMessage.setChatId(update.getMessage().getChatId());
         dataMessage.setMessageText(update.getMessage().getText());
+        dataMessage.setUserId(update.getMessage().getFrom().getId());
         messageBotHandlerRunner.run(dataMessage);
     }
 

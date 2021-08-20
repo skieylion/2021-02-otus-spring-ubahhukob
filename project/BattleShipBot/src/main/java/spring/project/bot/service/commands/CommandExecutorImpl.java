@@ -40,7 +40,8 @@ public class CommandExecutorImpl implements CommandExecutor {
 
     @Override
     public void failed(DataMessage data) {
-        telegramService.sendTextMessage(data.getChatId(), UserMessage.NO_SUPPORT);
+        Integer userId=data.getUserId();
+        telegramService.sendTextMessage(userId,data.getChatId(), UserMessage.NO_SUPPORT);
         //команда не выполнима (сообщение)
     }
 }

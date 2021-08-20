@@ -8,4 +8,5 @@ public class DataMessage {
     private Integer messageId;
     private String messageText;
     private String partnerId;
+    private Integer userId;
 }

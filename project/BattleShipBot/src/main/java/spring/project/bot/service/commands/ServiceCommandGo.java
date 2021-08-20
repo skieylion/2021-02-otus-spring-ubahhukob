@@ -30,6 +30,7 @@ public class ServiceCommandGo implements Command {
     @Override
     public void execute(DataMessage data) {
         Long chatId=data.getChatId();
+        Integer userId=data.getUserId();
         Chat chat = chatPlayerRepository.findById(chatId).orElseThrow();
         String playerId = chat.getPlayer().getId();
         String enemyId = chat.getPlayer().getEnemyId();
@@ -46,10 +47,10 @@ public class ServiceCommandGo implements Command {
             reverseChat.setChatState(ChatState.WAIT);
             chatPlayerRepository.save(reverseChat);
             BattleField battleField = new BattleField(10, 10);
-            telegramService.sendBattleField(firstChatId, UserMessage.GAME_START, battleField);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(reverseChatId, UserMessage.GAME_START_PARTNER);
+            telegramService.sendBattleField(userId,firstChatId, UserMessage.GAME_START, battleField);
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,reverseChatId, UserMessage.GAME_START_PARTNER);
         } else {
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatId, UserMessage.WAIT_PARTNER);
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.WAIT_PARTNER);
         }
 
         ChatForPartner chatForPartner = new ChatForPartner();

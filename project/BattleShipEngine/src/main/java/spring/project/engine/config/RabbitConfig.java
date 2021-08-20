@@ -12,12 +12,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitConfig {
 
-    @Value("${nameQueueInOut}")
-    private String nameQueueInOut;
+    private final String nameQueueInOut;
+
+    public RabbitConfig(@Value("${nameQueueInOut}") String nameQueueInOut) {
+        this.nameQueueInOut = nameQueueInOut;
+    }
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        return new CachingConnectionFactory();//"rabbitmq"
+        return new CachingConnectionFactory("rabbitmq");//
     }
     @Bean
     public RabbitAdmin rabbitAdmin(){

@@ -31,6 +31,7 @@ public class ServiceCommandJoin implements Command {
         Chat chat = new Chat();
         chat.setPlayer(player);
         chat.setChatId(chatId);
+        chat.setUserId(userId);
         chat.setChatState(ChatState.CONFIG);
         chatPlayerRepository.save(chat);
         telegramService.sendTextMessageWithKeyboardButtons(userId,chatId, UserMessage.JOIN, Collections.singletonList(UserCommand.GENERATE));

@@ -4,6 +4,7 @@ spring:
     basename: i18n/messages/messages
   redis:
     database: 1
+    host: redis
 server:
   port: 8083
 nameQueueInOut: QueueInOut

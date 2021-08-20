@@ -1,7 +1,9 @@
 package spring.project.bot.service.commands;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import spring.project.bot.exception.EntityNotFoundException;
 import spring.project.bot.model.*;
 import spring.project.bot.repository.ChatForPartnerRepository;
 import spring.project.bot.repository.ChatPlayerRepository;
@@ -28,6 +30,7 @@ public class ServiceCommandGo implements Command {
     }
 
     @Override
+    @SneakyThrows
     public void execute(DataMessage data) {
         Long chatId=data.getChatId();
         Integer userId=data.getUserId();
@@ -47,8 +50,10 @@ public class ServiceCommandGo implements Command {
             reverseChat.setChatState(ChatState.WAIT);
             chatPlayerRepository.save(reverseChat);
             BattleField battleField = new BattleField(10, 10);
-            telegramService.sendBattleField(userId,firstChatId, UserMessage.GAME_START, battleField);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,reverseChatId, UserMessage.GAME_START_PARTNER);
+            Chat chatFirst=chatPlayerRepository.findById(firstChatId).orElseThrow(EntityNotFoundException::new);
+            Chat chatReverse=chatPlayerRepository.findById(reverseChatId).orElseThrow(EntityNotFoundException::new);
+            telegramService.sendBattleField(chatFirst.getUserId(),firstChatId, UserMessage.GAME_START, battleField);
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatReverse.getUserId(),reverseChatId, UserMessage.GAME_START_PARTNER);
         } else {
             telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.WAIT_PARTNER);
         }

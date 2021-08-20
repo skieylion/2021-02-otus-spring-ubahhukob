@@ -71,23 +71,24 @@ public class ServiceCommandFire implements Command {
         FireResult result = fireResponse.getFireResult();
 
         ChatForPartner chatEnemy = chatForPartnerRepository.findById(chat.getPlayer().getEnemyId()).orElseThrow(EntityNotFoundException::new);
+        Chat chatEnemyForUser = chatPlayerRepository.findById(chatEnemy.getChatId()).orElseThrow(EntityNotFoundException::new);
         if (FireResult.HIT.equals(result) || FireResult.KILLED.equals(result)) {
             String answerToEnemy = FireResult.HIT.equals(result) ? UserMessage.PARTNER_HIT : UserMessage.PARTNER_KILLED;
             String answerToMe = FireResult.HIT.equals(result) ? UserMessage.YOU_HIT : UserMessage.YOU_KILLED;
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatEnemy.getChatId(), answerToEnemy);
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatEnemyForUser.getUserId(),chatEnemy.getChatId(), answerToEnemy);
             BattleField battleField = fireResponse.getEnemyField();
-            telegramService.sendBattleField(userId,chatId, answerToMe, battleField);
-            telegramService.sendPhoto(userId,chatEnemy.getChatId(), botConverter.convertToImage(battleField));
+            telegramService.sendBattleField(userId, chatId, answerToMe, battleField);
+            telegramService.sendPhoto(chatEnemyForUser.getUserId(), chatEnemy.getChatId(), botConverter.convertToImage(battleField));
         } else if (FireResult.WIN.equals(result)) {
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatEnemy.getChatId(), UserMessage.GAME_OVER);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.WINNER);
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatEnemyForUser.getUserId(), chatEnemy.getChatId(), UserMessage.GAME_OVER);
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId, chatId, UserMessage.WINNER);
             chatStateToolkit.deleteAll(chatId);
             chatStateToolkit.deleteAll(chatEnemy.getChatId());
         } else {
             chatStateToolkit.update(chatId, ChatState.WAIT);
             chatStateToolkit.update(chatEnemy.getChatId(), ChatState.PLAY);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.YOU_MISSED);
-            telegramService.sendBattleField(userId,chatEnemy.getChatId(), UserMessage.YOUR_TURN, convertEnemyField(fireResponse.getField()));
+            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId, chatId, UserMessage.YOU_MISSED);
+            telegramService.sendBattleField(chatEnemyForUser.getUserId(), chatEnemy.getChatId(), UserMessage.YOUR_TURN, convertEnemyField(fireResponse.getField()));
         }
     }
 }

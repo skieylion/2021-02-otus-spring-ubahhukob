@@ -12,4 +12,5 @@ public class Chat {
     private Long chatId;
     private Player player;
     private ChatState chatState;
+    private Integer userId;
 }

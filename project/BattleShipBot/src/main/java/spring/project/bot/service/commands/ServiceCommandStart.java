@@ -33,6 +33,7 @@ public class ServiceCommandStart implements Command {
         Chat chat = new Chat();
         chat.setPlayer(player);
         chat.setChatId(chatId);
+        chat.setUserId(userId);
         chat.setChatState(ChatState.CONFIG);
         chatPlayerRepository.save(chat);
         rabbitService.joinToBattle(player.getId());

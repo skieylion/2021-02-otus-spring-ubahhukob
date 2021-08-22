@@ -29,7 +29,6 @@ public class CommandExecutorImpl implements CommandExecutor {
 
 
     @Override
-    @SneakyThrows
     public void execute(Command command, DataMessage data) {
         if (command.getStates().contains(getState(data.getChatId()))) {
             command.execute(data);
@@ -42,6 +41,5 @@ public class CommandExecutorImpl implements CommandExecutor {
     public void failed(DataMessage data) {
         Integer userId=data.getUserId();
         telegramService.sendTextMessage(userId,data.getChatId(), UserMessage.NO_SUPPORT);
-        //команда не выполнима (сообщение)
     }
 }

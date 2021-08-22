@@ -1,5 +1,6 @@
 package spring.project.bot.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

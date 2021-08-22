@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class BattleField {
-    private List<List<CellType>> field;
+    private List<BattleFieldRaw> field;
     private int rows;
     private int columns;
 
@@ -17,7 +17,7 @@ public class BattleField {
         this.columns = columns;
         field = new ArrayList<>();
         for (int i = 0; i < rows; i++) {
-            field.add(new ArrayList<>());
+            field.add(new BattleFieldRaw());
             for (int j = 0; j < columns; j++) {
                 field.get(i).add(CellType.VOID);
             }

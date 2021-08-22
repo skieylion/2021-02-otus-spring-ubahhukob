@@ -21,23 +21,18 @@ public class ServicePlayerImpl implements ServicePlayer {
     }
 
     @Override
-    public void close(String playerId) {
+    public void closeBattle(String playerId) {
         battleFieldRepository.deleteById(playerId);
     }
 
     @Override
-    public PlayerDB get(String playerId) {
-        return battleFieldRepository.findById(playerId).orElseThrow();
-    }
-
-    @Override
-    public void go(String id) throws PlayerJoinException {
+    public void goToBattle(String id) throws PlayerJoinException {
         PlayerDB playerDB =battleFieldRepository.findById(id).orElseThrow(PlayerJoinException::new);
         battleFieldRepository.save(playerDB);
     }
 
     @Override
-    public FireResponse fire(String playerId, int x, int y) {
+    public FireResponse fireToBattleField(String playerId, int x, int y) {
         PlayerDB playerDB =battleFieldRepository.findById(playerId).orElseThrow();
         String enemyId= playerDB.getEnemyId();
         PlayerDB enemy=battleFieldRepository.findById(enemyId).orElseThrow();
@@ -54,14 +49,14 @@ public class ServicePlayerImpl implements ServicePlayer {
     }
 
     @Override
-    public Player join(String id) throws PlayerJoinException {
+    public Player joinToBattle(String id) throws PlayerJoinException {
         PlayerDB playerDB =battleFieldRepository.findById(id).orElseThrow(PlayerJoinException::new);
         battleFieldRepository.save(playerDB);
         return playerDB;
     }
 
     @Override
-    public PlayerDB start() {
+    public PlayerDB startBattle() {
         String myId =getId();
         String enemyId = getId();
 

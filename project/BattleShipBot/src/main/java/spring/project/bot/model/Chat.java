@@ -13,4 +13,11 @@ public class Chat {
     private Player player;
     private ChatState chatState;
     private Integer userId;
+    public Chat(){}
+    public Chat(Long chatId,Player player,ChatState chatState,Integer userId){
+        this.chatId=chatId;
+        this.player=player;
+        this.chatState=chatState;
+        this.userId=userId;
+    }
 }

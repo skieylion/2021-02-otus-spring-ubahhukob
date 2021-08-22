@@ -1,61 +1,59 @@
-package spring.project.bot.service;
+package spring.project.bot.service.converters;
 
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import spring.project.bot.model.*;
-import spring.project.common.model.*;
 import spring.project.common.model.Point;
+import spring.project.common.model.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Service
-public class BotConverterImpl implements BotConverter {
+public class ConverterBattleFieldImpl implements ConverterBattleField {
 
-    @Autowired
-    ResourceLoader resourceLoader;
+    private static final String nameRedSquareFile = "redsquare.png";
+    private static final String namePointFile = "point.png";
+    private static final String nameFullFile = "full.png";
+    private static final String nameSquareFile = "square.png";
+
+    private final ResourceLoader resourceLoader;
+    private final ConverterCommand converterCommand;
+    private final BufferedImage cellRed;
+    private final BufferedImage cellPoint;
+    private final BufferedImage cellShip;
+    private final BufferedImage cellSquare;
+    private final int cellWidth;
+    private final int cellHeight;
+
+    public ConverterBattleFieldImpl(ResourceLoader resourceLoader, ConverterCommand converterCommand) {
+        this.resourceLoader = resourceLoader;
+        this.converterCommand = converterCommand;
+        cellRed = getImage(nameRedSquareFile);
+        cellPoint = getImage(namePointFile);
+        cellShip = getImage(nameFullFile);
+        cellSquare = getImage(nameSquareFile);
+        cellWidth = cellSquare.getWidth();
+        cellHeight = cellSquare.getHeight();
+    }
 
 
     @SneakyThrows
     private BufferedImage getImage(String name) {
         InputStream cellPicRed = Objects.requireNonNull(resourceLoader.getClassLoader()).getResourceAsStream(name);
         return ImageIO.read(Objects.requireNonNull(cellPicRed));
-    }
-
-    @Override
-    public String convertPointToString(Point point, int sizeColumn) {
-        int i = point.getY();
-        int j = point.getX();
-        int code = i * sizeColumn + j;
-        String bin = Integer.toBinaryString(code);
-        bin = bin.replaceAll("1", String.valueOf(HiddenSymbol.ONE));
-        bin = bin.replaceAll("0", String.valueOf(HiddenSymbol.ZERO));
-        return bin;
-    }
-
-    @Override
-    public Point convertStringCodeToPoint(String codeString, int sizeColumn) {
-        codeString = codeString.replaceAll(String.valueOf(HiddenSymbol.ONE), "1");
-        codeString = codeString.replaceAll(String.valueOf(HiddenSymbol.ZERO), "0");
-        String binaryString = codeString;
-        int code = Integer.parseInt(binaryString, 2);
-        int j = code % sizeColumn;
-        int i = (code - j) / sizeColumn;
-
-        return new Point(j, i);
     }
 
     @Override
@@ -70,7 +68,7 @@ public class BotConverterImpl implements BotConverter {
     }
 
     @Override
-    public ReplyKeyboardMarkup convert(BattleField battleField) {
+    public ReplyKeyboardMarkup convertToKeyboard(BattleField battleField) {
 
         int rows = battleField.getRows();
         int columns = battleField.getColumns();
@@ -80,7 +78,7 @@ public class BotConverterImpl implements BotConverter {
         for (int i = 0; i < rows; i++) {
             KeyboardRow keyboardRow = new KeyboardRow();
             for (int j = 0; j < columns; j++) {
-                KeyboardButton keyboardButton = new KeyboardButton(battleField.getCell(i, j).toString() + convertPointToString(new Point(j, i), columns));
+                KeyboardButton keyboardButton = new KeyboardButton(battleField.getCell(i, j).toString() + converterCommand.convertPointToString(new Point(j, i), columns));
                 keyboardRow.add(keyboardButton);
             }
             table.add(keyboardRow);
@@ -90,22 +88,19 @@ public class BotConverterImpl implements BotConverter {
         return replyKeyboardMarkup;
     }
 
-    @Override
-    @SneakyThrows
-    public InputFile convertToImage(BattleField battleField) {
-        BufferedImage cellRed = getImage("redsquare.png");
-        BufferedImage cellPoint = getImage("point.png");
-        BufferedImage cellShip = getImage("full.png");
-        BufferedImage cell = getImage("square.png");
-        int cellWidth = cell.getWidth();
-        int cellHeight = cell.getHeight();
-        int countCellWidth = battleField.getColumns();
-        int countCellHeight = battleField.getRows();
-        int width = cellWidth * countCellWidth;
-        int height = cellHeight * countCellHeight;
+    private InputFile createTempFileByImage(BufferedImage bufferedImage) throws IOException {
+        File file = File.createTempFile("field-", ".png");
+        ImageIO.write(bufferedImage, "png", file);
+        InputFile inputFile = new InputFile();
+        inputFile.setMedia(new FileInputStream(file), file.getName());
+        file.deleteOnExit();
+        return inputFile;
+    }
 
+    private BufferedImage createImageByBattleField(BattleField battleField) {
+        int width = cellWidth * battleField.getColumns();
+        int height = cellHeight * battleField.getRows();
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
         Graphics2D graphics2D = bufferedImage.createGraphics();
         graphics2D.setColor(Color.WHITE);
         graphics2D.fillRect(0, 0, width, height);
@@ -115,7 +110,7 @@ public class BotConverterImpl implements BotConverter {
                 int coordX = j * cellWidth;
                 int coordY = i * cellHeight;
                 CellType cellType = battleField.getCell(i, j);
-                BufferedImage img = cell;
+                BufferedImage img = cellSquare;
                 if (CellType.FULL.equals(cellType)) {
                     img = cellShip;
                 } else if (CellType.MISS.equals(cellType)) {
@@ -126,14 +121,13 @@ public class BotConverterImpl implements BotConverter {
                 graphics2D.drawImage(img, coordX, coordY, null);
             }
         }
+        return bufferedImage;
+    }
 
-
-        File file = File.createTempFile("field-", ".png");
-        ImageIO.write(bufferedImage, "png", file);
-        InputFile inputFile = new InputFile();
-        inputFile.setMedia(new FileInputStream(file), file.getName());
-        file.deleteOnExit();
-
-        return inputFile;
+    @Override
+    @SneakyThrows
+    public InputFile convertToImage(BattleField battleField) {
+        BufferedImage bufferedImage = createImageByBattleField(battleField);
+        return createTempFileByImage(bufferedImage);
     }
 }

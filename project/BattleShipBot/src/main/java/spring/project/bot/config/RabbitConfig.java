@@ -10,13 +10,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-
-    private final String nameQueueInOut;
-
-    public RabbitConfig(@Value("${nameQueueInOut}") String nameQueueInOut) {
-        this.nameQueueInOut = nameQueueInOut;
-    }
-
     @Bean
     public ConnectionFactory connectionFactory() {
         return new CachingConnectionFactory("rabbitmq");//

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import spring.project.bot.model.*;
 import spring.project.bot.repository.ChatPlayerRepository;
-import spring.project.bot.service.BotConverter;
+import spring.project.bot.service.converters.ConverterBattleField;
 import spring.project.bot.service.RabbitService;
 import spring.project.bot.service.TelegramService;
 import spring.project.common.model.Player;
@@ -22,7 +22,7 @@ public class ServiceCommandGenerate implements Command {
     private final ChatPlayerRepository chatPlayerRepository;
     private final RabbitService rabbitService;
     private final TelegramService telegramService;
-    private final BotConverter botConverter;
+    private final ConverterBattleField converterBattleField;
 
 
     @Override
@@ -39,7 +39,7 @@ public class ServiceCommandGenerate implements Command {
         player = rabbitService.generateField(player.getId());
         chat.setPlayer(player);
         chatPlayerRepository.save(chat);
-        InputFile inputFile = botConverter.convertToImage(botConverter.convertToBattleField(player.getField()));
+        InputFile inputFile = converterBattleField.convertToImage(converterBattleField.convertToBattleField(player.getField()));
         telegramService.sendPhoto(userId,chatId, inputFile);
         telegramService.sendTextMessageWithKeyboardButtons(userId,chatId, UserMessage.YOUR_FIELD, Arrays.asList(UserCommand.GO, UserCommand.NEW));
     }

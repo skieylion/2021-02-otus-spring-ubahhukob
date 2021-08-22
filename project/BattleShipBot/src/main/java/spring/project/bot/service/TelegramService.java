@@ -23,6 +23,4 @@ public interface TelegramService {
     void sendBattleField(Integer userId,Long chatId, String text, BattleField battleField);
 
     void deleteMessage(Integer userId,Long chatId, Integer messageId);
-
-    void setAction(Function<Object,Void> func);
 }

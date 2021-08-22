@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import spring.project.bot.model.Chat;
 import spring.project.bot.model.ChatForPartner;
+import spring.project.bot.model.ChatState;
 import spring.project.bot.repository.ChatForPartnerRepository;
 import spring.project.bot.repository.ChatPlayerRepository;
 import spring.project.bot.service.RabbitService;
@@ -18,7 +19,7 @@ public class ChatStateToolkitImpl implements ChatStateToolkit {
     private final ChatPlayerRepository chatPlayerRepository;
 
     @Override
-    public void update(Long chatId, spring.project.bot.model.ChatState chatState) {
+    public void update(Long chatId, ChatState chatState) {
         Chat chat = chatPlayerRepository.findById(chatId).orElseThrow();
         chat.setChatState(chatState);
         chatPlayerRepository.save(chat);

@@ -29,6 +29,31 @@ public class ServiceCommandGo implements Command {
         return states;
     }
 
+    private void initChatForPartner(String playerId,Long chatId){
+        ChatForPartner chatForPartner = new ChatForPartner();
+        chatForPartner.setPartnerId(playerId);
+        chatForPartner.setChatId(chatId);
+        chatForPartnerRepository.save(chatForPartner);
+    }
+
+    private void go(ChatForPartner chatForPartner,Long chatId) throws EntityNotFoundException {
+        Long chatEnemyId = chatForPartner.getChatId();
+        Long firstChatId = new Random().nextBoolean() ? chatId : chatEnemyId;
+        Long reverseChatId = !firstChatId.equals(chatId) ? chatId : chatEnemyId;
+        Chat firstChat = chatPlayerRepository.findById(firstChatId).orElseThrow();
+        firstChat.setChatState(ChatState.PLAY);
+        chatPlayerRepository.save(firstChat);
+        Chat reverseChat = chatPlayerRepository.findById(reverseChatId).orElseThrow();
+        reverseChat.setChatState(ChatState.WAIT);
+        chatPlayerRepository.save(reverseChat);
+        BattleField battleField = new BattleField(10, 10);
+        Chat chatFirst=chatPlayerRepository.findById(firstChatId).orElseThrow(EntityNotFoundException::new);
+        Chat chatReverse=chatPlayerRepository.findById(reverseChatId).orElseThrow(EntityNotFoundException::new);
+        telegramService.sendBattleField(chatFirst.getUserId(),firstChatId, UserMessage.GAME_START, battleField);
+        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatReverse.getUserId(),reverseChatId, UserMessage.GAME_START_PARTNER);
+    }
+
+
     @Override
     @SneakyThrows
     public void execute(DataMessage data) {
@@ -39,28 +64,11 @@ public class ServiceCommandGo implements Command {
         String enemyId = chat.getPlayer().getEnemyId();
         Optional<ChatForPartner> chatEnemy = chatForPartnerRepository.findById(enemyId);
         if (chatEnemy.isPresent()) {
-            ChatForPartner chatForPartner = chatEnemy.get();
-            Long chatEnemyId = chatForPartner.getChatId();
-            Long firstChatId = new Random().nextBoolean() ? chatId : chatEnemyId;
-            Long reverseChatId = !firstChatId.equals(chatId) ? chatId : chatEnemyId;
-            Chat firstChat = chatPlayerRepository.findById(firstChatId).orElseThrow();
-            firstChat.setChatState(ChatState.PLAY);
-            chatPlayerRepository.save(firstChat);
-            Chat reverseChat = chatPlayerRepository.findById(reverseChatId).orElseThrow();
-            reverseChat.setChatState(ChatState.WAIT);
-            chatPlayerRepository.save(reverseChat);
-            BattleField battleField = new BattleField(10, 10);
-            Chat chatFirst=chatPlayerRepository.findById(firstChatId).orElseThrow(EntityNotFoundException::new);
-            Chat chatReverse=chatPlayerRepository.findById(reverseChatId).orElseThrow(EntityNotFoundException::new);
-            telegramService.sendBattleField(chatFirst.getUserId(),firstChatId, UserMessage.GAME_START, battleField);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatReverse.getUserId(),reverseChatId, UserMessage.GAME_START_PARTNER);
+            go(chatEnemy.get(),chatId);
         } else {
             telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId,chatId, UserMessage.WAIT_PARTNER);
         }
 
-        ChatForPartner chatForPartner = new ChatForPartner();
-        chatForPartner.setPartnerId(playerId);
-        chatForPartner.setChatId(chatId);
-        chatForPartnerRepository.save(chatForPartner);
+        initChatForPartner(playerId,chatId);
     }
 }

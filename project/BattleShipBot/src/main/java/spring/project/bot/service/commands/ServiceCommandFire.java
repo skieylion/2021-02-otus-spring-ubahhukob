@@ -7,9 +7,10 @@ import spring.project.bot.exception.EntityNotFoundException;
 import spring.project.bot.model.*;
 import spring.project.bot.repository.ChatForPartnerRepository;
 import spring.project.bot.repository.ChatPlayerRepository;
-import spring.project.bot.service.BotConverter;
+import spring.project.bot.service.converters.ConverterBattleField;
 import spring.project.bot.service.RabbitService;
 import spring.project.bot.service.TelegramService;
+import spring.project.bot.service.converters.ConverterCommand;
 import spring.project.common.model.*;
 
 import java.util.Arrays;
@@ -23,11 +24,12 @@ public class ServiceCommandFire implements Command {
     private final List<ChatState> states = Collections.singletonList(ChatState.PLAY);
 
     private final ChatPlayerRepository chatPlayerRepository;
-    private final BotConverter botConverter;
+    private final ConverterBattleField converterBattleField;
     private final RabbitService rabbitService;
     private final TelegramService telegramService;
     private final ChatForPartnerRepository chatForPartnerRepository;
     private final ChatStateToolkit chatStateToolkit;
+    private final ConverterCommand converterCommand;
 
 
     private BattleField convertEnemyField(BattleField battleField) {
@@ -54,41 +56,85 @@ public class ServiceCommandFire implements Command {
         return states;
     }
 
+    private Point getPointByMessageText(int size,String messageText) throws EntityNotFoundException {
+        String code = extractCommand(messageText);
+        return converterCommand.convertStringCodeToPoint(code, size);
+    }
+
+    private boolean isWin(FireResult result){
+        if(FireResult.WIN.equals(result)){
+            return true;
+        }
+        return false;
+    }
+    private boolean isHitOrKilled(FireResult result){
+        if(FireResult.HIT.equals(result) || FireResult.KILLED.equals(result)){
+            return true;
+        }
+        return false;
+    }
+    private void actionHitOrKilled(FireResponse fireResponse,Params params){
+        String answerToEnemy = FireResult.HIT.equals(fireResponse.getFireResult()) ? UserMessage.PARTNER_HIT : UserMessage.PARTNER_KILLED;
+        String answerToMe = FireResult.HIT.equals(fireResponse.getFireResult()) ? UserMessage.YOU_HIT : UserMessage.YOU_KILLED;
+        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(params.enemyUserId,params.chatEnemyId, answerToEnemy);
+        BattleField battleField = fireResponse.getEnemyField();
+        telegramService.sendBattleField(params.currentUserId, params.chatCurrentId, answerToMe, battleField);
+        telegramService.sendPhoto(params.enemyUserId, params.chatEnemyId, converterBattleField.convertToImage(battleField));
+    }
+    private void actionWin(Params params){
+        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(params.enemyUserId, params.chatEnemyId, UserMessage.GAME_OVER);
+        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(params.currentUserId, params.chatCurrentId, UserMessage.WINNER);
+        chatStateToolkit.deleteAll(params.chatCurrentId);
+        chatStateToolkit.deleteAll(params.chatEnemyId);
+    }
+    private void actionOther(BattleField battleField,Params params){
+        chatStateToolkit.update(params.chatCurrentId, ChatState.WAIT);
+        chatStateToolkit.update(params.chatEnemyId, ChatState.PLAY);
+        telegramService.sendTextMessageWithoutReplyKeyboardMarkup(params.currentUserId, params.chatCurrentId, UserMessage.YOU_MISSED);
+        telegramService.sendBattleField(params.enemyUserId, params.chatEnemyId, UserMessage.YOUR_TURN, convertEnemyField(battleField));
+    }
+
     @Override
     @SneakyThrows
     public void execute(DataMessage data) {
-        Long chatId = data.getChatId();
-        Integer messageId = data.getMessageId();
-        String messageText = data.getMessageText();
-        Integer userId=data.getUserId();
-
-        telegramService.deleteMessage(userId,chatId, messageId);
-        String code = extractCommand(messageText);
-        Chat chat = chatPlayerRepository.findById(chatId).orElseThrow(EntityNotFoundException::new);
-        Point point = botConverter.convertStringCodeToPoint(code, chat.getPlayer().getField().getSizeColumn());
-
-        FireResponse fireResponse = rabbitService.fireOnShip(chat.getPlayer().getId(), point);
+        Params params=new Params(data);
+        telegramService.deleteMessage(params.currentUserId,params.chatCurrentId, params.messageId);
+        Point point=getPointByMessageText(params.sizeColumn, params.messageText);
+        FireResponse fireResponse = rabbitService.fireOnShip(params.currentPlayerId, point);
         FireResult result = fireResponse.getFireResult();
 
-        ChatForPartner chatEnemy = chatForPartnerRepository.findById(chat.getPlayer().getEnemyId()).orElseThrow(EntityNotFoundException::new);
-        Chat chatEnemyForUser = chatPlayerRepository.findById(chatEnemy.getChatId()).orElseThrow(EntityNotFoundException::new);
-        if (FireResult.HIT.equals(result) || FireResult.KILLED.equals(result)) {
-            String answerToEnemy = FireResult.HIT.equals(result) ? UserMessage.PARTNER_HIT : UserMessage.PARTNER_KILLED;
-            String answerToMe = FireResult.HIT.equals(result) ? UserMessage.YOU_HIT : UserMessage.YOU_KILLED;
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatEnemyForUser.getUserId(),chatEnemy.getChatId(), answerToEnemy);
-            BattleField battleField = fireResponse.getEnemyField();
-            telegramService.sendBattleField(userId, chatId, answerToMe, battleField);
-            telegramService.sendPhoto(chatEnemyForUser.getUserId(), chatEnemy.getChatId(), botConverter.convertToImage(battleField));
-        } else if (FireResult.WIN.equals(result)) {
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(chatEnemyForUser.getUserId(), chatEnemy.getChatId(), UserMessage.GAME_OVER);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId, chatId, UserMessage.WINNER);
-            chatStateToolkit.deleteAll(chatId);
-            chatStateToolkit.deleteAll(chatEnemy.getChatId());
+        if (isHitOrKilled(result)) {
+            actionHitOrKilled(fireResponse,params);
+        } else if (isWin(result)) {
+            actionWin(params);
         } else {
-            chatStateToolkit.update(chatId, ChatState.WAIT);
-            chatStateToolkit.update(chatEnemy.getChatId(), ChatState.PLAY);
-            telegramService.sendTextMessageWithoutReplyKeyboardMarkup(userId, chatId, UserMessage.YOU_MISSED);
-            telegramService.sendBattleField(chatEnemyForUser.getUserId(), chatEnemy.getChatId(), UserMessage.YOUR_TURN, convertEnemyField(fireResponse.getField()));
+            actionOther(fireResponse.getField(),params);
+        }
+    }
+
+    private final class Params {
+        private final Long chatCurrentId;
+        private final Long chatEnemyId;
+        private final Integer currentUserId;
+        private final Integer enemyUserId;
+        private final Integer messageId;
+        private final String messageText;
+        private final int sizeColumn;
+        private final String currentPlayerId;
+
+        private Params(DataMessage data) throws EntityNotFoundException {
+            this.chatCurrentId = data.getChatId();
+            this.messageId = data.getMessageId();
+            this.messageText = data.getMessageText();
+            this.currentUserId=data.getUserId();
+            Chat chat = chatPlayerRepository.findById(this.chatCurrentId).orElseThrow(EntityNotFoundException::new);
+            this.sizeColumn=chat.getPlayer().getField().getSizeColumn();
+            this.currentPlayerId=chat.getPlayer().getId();
+            String enemyPlayerId=chat.getPlayer().getEnemyId();
+            ChatForPartner chatEnemy = chatForPartnerRepository.findById(enemyPlayerId).orElseThrow(EntityNotFoundException::new);
+            this.chatEnemyId=chatEnemy.getChatId();
+            Chat chatEnemyForUser = chatPlayerRepository.findById(chatEnemyId).orElseThrow(EntityNotFoundException::new);
+            this.enemyUserId=chatEnemyForUser.getUserId();
         }
     }
 }

@@ -51,26 +51,24 @@ public class RabbitMqListener {
 
             switch (typeMessage) {
                 case "Start":
-                    return createMessageFromJson(mapper.writeValueAsString(servicePlayer.start()));
-                case "GetPlayer":
-                    return createMessageFromJson(mapper.writeValueAsString(servicePlayer.get(playerId)));
+                    return createMessageFromJson(mapper.writeValueAsString(servicePlayer.startBattle()));
                 case "Join":
-                    return createMessageFromJson(mapper.writeValueAsString( servicePlayer.join(playerId)));
+                    return createMessageFromJson(mapper.writeValueAsString( servicePlayer.joinToBattle(playerId)));
                 case "Generate":
                     PlayerDB playerDB=battleFieldGenerator.generate10(playerId);
                     String json=mapper.writeValueAsString(playerDB);
                     return createMessageFromJson(json);
                 case "Go":
-                    servicePlayer.go(playerId);
+                    servicePlayer.goToBattle(playerId);
                     return createMessageFromJson("ok");
                 case "Fire":
                     int x=Integer.parseInt(prop.getHeader("x"));
                     int y=Integer.parseInt(prop.getHeader("y"));
                     System.out.println(playerId);
-                    FireResponse fireResponse=servicePlayer.fire(playerId,x,y);
+                    FireResponse fireResponse=servicePlayer.fireToBattleField(playerId,x,y);
                     return createMessageFromJson(mapper.writeValueAsString(fireResponse));
                 case "Close":
-                    servicePlayer.close(playerId);
+                    servicePlayer.closeBattle(playerId);
                     return createMessageFromJson("ok");
                 default:
                     throw new MessageTypeNotFoundException();

@@ -1,0 +1,14 @@
+localeDefault: ru-RU
+spring:
+  messages:
+    basename: i18n/messages/messages
+  redis:
+    database: 1
+    host: redis
+server:
+  port: 8083
+nameQueueInOut: QueueInOut
+templateURL: https://t.me/XXXmeIxBot?start=
+bot:
+  name: XXXmeIxBot
+  token: 1924794338:AAHXnpOAft0PL5ova6vTshZZ9kv4GmWl-jA

@@ -1,8 +1,8 @@
+
+Репозиторий: https://github.com/OtusTeam/Spring.git 
 Курс:      Разработчик на Spring Framework
-
 Группа:    spring-2021-02
-
-Слушатель: Иванников Евгений Михайлович
+Слушатель: ubahhukob
 
 ## Домашние работы
 

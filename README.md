@@ -1,8 +1,5 @@
 
 Репозиторий: https://github.com/OtusTeam/Spring.git 
-Курс:      Разработчик на Spring Framework
-Группа:    spring-2021-02
-Слушатель: ubahhukob
 
 ## Домашние работы
 
